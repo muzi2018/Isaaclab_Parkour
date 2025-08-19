@@ -33,4 +33,5 @@ setup(
         "Isaac Sim :: 4.5.0",
     ],
     zip_safe=False,
+    install_requires=['fast_simplification']
 )

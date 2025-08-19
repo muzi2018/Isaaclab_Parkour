@@ -11,7 +11,7 @@ from .parkour_teacher_cfg import ParkourTeacherSceneCfg
 @configclass
 class ParkourStudentSceneCfg(ParkourTeacherSceneCfg):
     depth_camera = CAMERA_CFG
-    depth_camera_usd = CAMERA_USD_CFG
+    depth_camera_usd = None
     
     def __post_init__(self):
         super().__post_init__()
@@ -21,6 +21,7 @@ class ParkourStudentSceneCfg(ParkourTeacherSceneCfg):
         
         for key, sub_terrain in self.terrain.terrain_generator.sub_terrains.items():
             sub_terrain: ExtremeParkourRoughTerrainCfg
+            sub_terrain.use_simplified = True 
             if key == 'demo':
                 sub_terrain.proportion = 0.15
                 sub_terrain.y_range = (-0.1, 0.1)
@@ -80,6 +81,7 @@ class UnitreeGo2StudentParkourEnvCfg_PLAY(UnitreeGo2StudentParkourEnvCfg):
     def __post_init__(self):
         # post init of parent
         super().__post_init__()
+        self.scene.depth_camera_usd = CAMERA_USD_CFG
         self.parkours.base_parkour.debug_vis = True
         self.commands.base_velocity.debug_vis = True
         self.scene.num_envs = 16

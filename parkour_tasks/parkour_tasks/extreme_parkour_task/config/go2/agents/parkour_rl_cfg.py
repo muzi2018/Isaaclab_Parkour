@@ -40,7 +40,7 @@ class ParkourRslRlDepthEncoderCfg(ParkourRslRlBaseCfg):
     depth_shape: tuple[int] = (87, 58)
     hidden_dims: int = 512
     learning_rate: float = 1.e-3
-    num_steps_per_env: int = 5 * 24
+    num_steps_per_env: int = 24 * 5
 
 @configclass
 class ParkourRslRlEstimatorCfg(ParkourRslRlBaseCfg):

@@ -37,16 +37,16 @@ class ParkourEvent(ParkourTerm):
                
         self.robot: Articulation = env.scene[cfg.asset_name]
         # -- metrics
-        self.metrics["far_from_current_goal"] = torch.zeros(self.num_envs, device=self.device)
-        self.metrics["how_far_from_start_point"] = torch.zeros(self.num_envs, device=self.device)
-        self.metrics["terrain_levels"] = torch.zeros(self.num_envs, device=self.device)
-        self.metrics["current_goal_idx"] = torch.zeros(self.num_envs, device=self.device)
+        self.metrics["far_from_current_goal"] = torch.zeros(self.num_envs, device='cpu')
+        self.metrics["how_far_from_start_point"] = torch.zeros(self.num_envs, device='cpu')
+        self.metrics["terrain_levels"] = torch.zeros(self.num_envs, device='cpu')
+        self.metrics["current_goal_idx"] = torch.zeros(self.num_envs, device='cpu')
         self.dis_to_start_pos = torch.zeros(self.num_envs, device=self.device)
         self.terrain: ParkourTerrainImporter = self.env.scene.terrain
         terrain_generator: ParkourTerrainGenerator = self.terrain.terrain_generator_class
         parkour_terrain_cfg :ParkourTerrainGeneratorCfg = self.terrain.cfg.terrain_generator
         self.num_goals = parkour_terrain_cfg.num_goals
-        self.env_class = torch.zeros(self.num_envs, device=self.device, requires_grad=False)
+        self.env_class = torch.zeros(self.num_envs, device=self.device)
         self.env_origins = self.terrain.env_origins
         self.terrain_type = terrain_generator.terrain_type
         self.terrain_class = torch.from_numpy(self.terrain_type).to(self.device).to(torch.float)
@@ -61,15 +61,15 @@ class ParkourEvent(ParkourTerm):
         self.env_goals[:] = torch.cat((temp, last_col.repeat(1, self.num_future_goal_obs, 1)), dim=1)[:]
         self.cur_goals = self._gather_cur_goals()
         self.next_goals = self._gather_cur_goals(future=1)
-        self.reach_goal_timer = torch.zeros(self.num_envs, dtype=torch.float, device=self.device, requires_grad=False)
-        self.total_heights = torch.from_numpy(terrain_generator.goal_heights).to(device = self.device)
-
+        self.reach_goal_timer = torch.zeros(self.num_envs, dtype=torch.float).to(device = self.device)
+        
         if self.debug_vis:
+            self.total_heights = torch.from_numpy(terrain_generator.goal_heights).to(device = self.device)
             self.future_goal_idx = torch.ones(self.num_goals, device=self.device, dtype=torch.bool).repeat(self.num_envs, 1)
             self.future_goal_idx[:, 0] = False
             self.env_per_heights = self.total_heights[self.terrain.terrain_levels, self.terrain.terrain_types]
-        
-        self.total_x_edge_maskes = torch.from_numpy(terrain_generator.x_edge_maskes).to(device= self.device)
+       
+        self.total_x_edge_maskes = torch.from_numpy(terrain_generator.x_edge_maskes).to(device = self.device)
 
         self.total_terrain_names = terrain_generator.terrain_names
         numpy_terrain_levels = self.terrain.terrain_levels.detach().cpu().numpy() ## string type can't convert to torch
@@ -173,11 +173,11 @@ class ParkourEvent(ParkourTerm):
 
     def _update_metrics(self):
         # logs data
-        self.metrics["terrain_levels"] = self.terrain.terrain_levels.float()
+        self.metrics["terrain_levels"] = (self.terrain.terrain_levels.float()).to(device = 'cpu')
         robot_root_pos_w = self.robot.data.root_pos_w[:, :2] - self.env_origins[:, :2]
-        self.metrics["far_from_current_goal"] = torch.norm(self.cur_goals[:, :2] - robot_root_pos_w,dim =-1) - self.next_goal_threshold
-        self.metrics["current_goal_idx"] = self.cur_goal_idx.clone().to(device=self.device, dtype=float) 
-        self.metrics["how_far_from_start_point"] = self.dis_to_start_pos 
+        self.metrics["far_from_current_goal"] = (torch.norm(self.cur_goals[:, :2] - robot_root_pos_w,dim =-1) - self.next_goal_threshold).to(device = 'cpu')
+        self.metrics["current_goal_idx"] = self.cur_goal_idx.to(device='cpu', dtype=float)
+        self.metrics["how_far_from_start_point"] = self.dis_to_start_pos.to(device = 'cpu')
         
     def _set_debug_vis_impl(self, debug_vis: bool):
         # create markers if necessary for the first tome

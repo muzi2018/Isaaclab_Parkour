@@ -16,6 +16,7 @@ class ParkourSubTerrainBaseCfg(HfTerrainBaseCfg):
     platform_height: float = 0.
     slope_threshold: float | None = 1.5
     edge_width_thresh = 0.05
+    use_simplified: bool = False
     
 @configclass
 class ParkourTerrainGeneratorCfg(TerrainGeneratorCfg):

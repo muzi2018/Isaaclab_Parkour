@@ -18,6 +18,7 @@ from isaaclab.assets import Articulation
 from isaaclab.utils.math  import euler_xyz_from_quat, wrap_to_pi
 from parkour_isaaclab.envs.mdp.parkours import ParkourEvent 
 from collections.abc import Sequence
+import cv2
 if TYPE_CHECKING:
     from parkour_isaaclab.envs import ParkourManagerBasedRLEnv
     from isaaclab.managers import ObservationTermCfg
@@ -139,13 +140,14 @@ class ExtremeParkourObservations(ManagerTermBase):
         default_joint_damping = self.asset.data.default_joint_damping.to(self.device)
         return torch.cat((
             mass_params_tensor,
-            friction_coeffs_tensor.unsqueeze(1).to('cuda'),
+            friction_coeffs_tensor.unsqueeze(1).to(self.device),
             (joint_stiffness/ default_joint_stiffness) - 1, 
             (joint_damping/ default_joint_damping) - 1
         ), dim=-1).to(self.device)
     
     def _get_heights(self):
         return torch.clip(self.ray_sensor.data.pos_w[:, 2].unsqueeze(1) - self.ray_sensor.data.ray_hits_w[..., 2] - 0.3, -1, 1).to(self.device)
+
 
 class image_features(ManagerTermBase):
     
@@ -186,6 +188,7 @@ class image_features(ManagerTermBase):
                 processed_image = self._process_depth_image(depth_image)
                 self.depth_buffer[env_id] = torch.cat([self.depth_buffer[env_id, 1:], 
                                                     processed_image.to(self.device).unsqueeze(0)], dim=0)
+                
         return self.depth_buffer[:, -2].to(env.device)
 
     def _process_depth_image(self, depth_image):

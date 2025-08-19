@@ -8,7 +8,6 @@ import trimesh
 from collections.abc import Callable
 from scipy.ndimage import binary_dilation
 from typing import TYPE_CHECKING
-
 if TYPE_CHECKING:
     from ..terrains import ParkourSubTerrainBaseCfg
 
@@ -46,6 +45,8 @@ def parkour_field_to_mesh(func: Callable) -> Callable:
         x_edge_mask = binary_dilation(x_edge_mask, structure=structure)
         cfg.size = terrain_size
         mesh = trimesh.Trimesh(vertices=vertices, faces=triangles)
+        if cfg.use_simplified:
+            mesh = mesh.simplify_quadric_decimation(face_count = int(0.85*triangles.shape[0]) , aggression=7)
         # compute origin
         x1 = int((cfg.size[0] * 0.5 - 1) / cfg.horizontal_scale)
         x2 = int((cfg.size[0] * 0.5 + 1) / cfg.horizontal_scale)
@@ -56,7 +57,6 @@ def parkour_field_to_mesh(func: Callable) -> Callable:
         return [mesh], origin, goals, goal_heights, x_edge_mask
 
     return wrapper
-
 
 def convert_height_field_to_mesh(
     height_field: np.ndarray, horizontal_scale: float, vertical_scale: float, slope_threshold: float | None = None

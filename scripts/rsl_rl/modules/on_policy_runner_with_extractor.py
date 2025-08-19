@@ -329,7 +329,7 @@ class OnPolicyRunnerWithExtractor(OnPolicyRunner):
 
         obs, extras = self.env.get_observations()
         additional_obs = {}
-        additional_obs["delta_yaw_ok"] = torch.ones(self.env.num_envs, dtype=torch.bool, device=self.device)
+        additional_obs["delta_yaw_ok"] = extras['observations']['delta_yaw_ok'].to(self.device)
         additional_obs["depth_camera"] = extras["observations"]['depth_camera'].to(self.device)
         obs = obs.to(self.device)
 
@@ -351,29 +351,22 @@ class OnPolicyRunnerWithExtractor(OnPolicyRunner):
         num_pretrain_iter = 0
         for it in range(start_iter, tot_iter):
             start = time.time()
-            actions_teacher_buffer = []
-            actions_student_buffer = []
-            yaw_buffer_student = []
-            yaw_buffer_teacher = []
+            actions_buffer = []
             delta_yaw_ok_buffer = []
-            
+            yaws_buffer = []
             for _ in range(self.depth_encoder_cfg['num_steps_per_env']):
                 obs_prop_depth = obs[:, :self.depth_encoder_cfg['num_prop']].clone()
                 obs_prop_depth[:, 6:8] = 0
                 depth_latent_and_yaw = self.alg.depth_encoder(additional_obs["depth_camera"].clone(), obs_prop_depth)  # clone is crucial to avoid in-place operation
                 depth_latent = depth_latent_and_yaw[:, :-2]
                 yaw = 1.5*depth_latent_and_yaw[:, -2:]
-                yaw_buffer_student.append(yaw)
-                yaw_buffer_teacher.append(obs[:, 6:8])
                 with torch.no_grad():
                     actions_teacher = self.alg.policy.act_inference(obs, hist_encoding=True, scandots_latent=None)
-                    actions_teacher_buffer.append(actions_teacher)
-
-                obs_student = obs.clone()
-                obs_student[additional_obs["delta_yaw_ok"], 6:8] = yaw.detach()[additional_obs["delta_yaw_ok"]]
-                delta_yaw_ok_buffer.append(torch.nonzero(additional_obs["delta_yaw_ok"]).size(0) / additional_obs["delta_yaw_ok"].numel())
-                actions_student = self.alg.depth_actor(obs_student, hist_encoding=True, scandots_latent=depth_latent)
-                actions_student_buffer.append(actions_student)
+                    delta_yaw_ok_buffer.append(torch.nonzero(additional_obs["delta_yaw_ok"]).size(0) / additional_obs["delta_yaw_ok"].numel())
+                obs[additional_obs["delta_yaw_ok"], 6:8] = yaw.detach()[additional_obs["delta_yaw_ok"]]
+                actions_student = self.alg.depth_actor(obs, hist_encoding=True, scandots_latent=depth_latent)
+                actions_buffer.append(actions_teacher.detach() - actions_student)
+                yaws_buffer.append(obs[:, 6:8].detach() - yaw )
                 if it < num_pretrain_iter:
                     # Step the environment
                     obs, _, dones, infos = self.env.step(actions_teacher.detach().to(self.env.device))
@@ -406,12 +399,10 @@ class OnPolicyRunnerWithExtractor(OnPolicyRunner):
             collection_time = stop - start
             start = stop
             delta_yaw_ok_percentage = sum(delta_yaw_ok_buffer) / len(delta_yaw_ok_buffer)
+            actions_buffer = torch.cat(actions_buffer, dim=0)
+            yaws_buffer = torch.cat(yaws_buffer, dim=0)
+            loss_dict = self.alg.update_depth_actor(actions_buffer, yaws_buffer)
 
-            actions_teacher_buffer = torch.cat(actions_teacher_buffer, dim=0)
-            actions_student_buffer = torch.cat(actions_student_buffer, dim=0)
-            yaw_buffer_student = torch.cat(yaw_buffer_student, dim=0)
-            yaw_buffer_teacher = torch.cat(yaw_buffer_teacher, dim=0)
-            loss_dict = self.alg.update_depth_actor(actions_student_buffer, actions_teacher_buffer, yaw_buffer_student, yaw_buffer_teacher)
             stop = time.time()
             learn_time = stop - start
             self.alg.depth_encoder.detach_hidden_states()

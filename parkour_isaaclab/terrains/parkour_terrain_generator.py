@@ -18,7 +18,7 @@ class ParkourTerrainGenerator(TerrainGenerator):
         self.total_length_pixels = length_pixels * cfg.num_cols
         self.goal_heights = np.zeros((cfg.num_rows, cfg.num_cols, self.num_goals), dtype=np.int16)
         self.x_edge_maskes = np.zeros((cfg.num_rows, cfg.num_cols, width_pixels, length_pixels), dtype=np.int16)
-       
+
         super().__init__(cfg=cfg, device=device)
         self.cfg:ParkourTerrainGeneratorCfg
 

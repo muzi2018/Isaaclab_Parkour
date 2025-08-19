@@ -111,6 +111,7 @@ class StudentRewardsCfg:
             "sensor_cfg":SceneEntityCfg("contact_forces", body_names=["base",".*_calf",".*_thigh"]),
         },
     )
+    
 
 @configclass
 class TeacherRewardsCfg:

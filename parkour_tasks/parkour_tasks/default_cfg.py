@@ -64,22 +64,6 @@ class ParkourDefaultSceneCfg(InteractiveSceneCfg):
         self.robot.spawn.articulation_props.enabled_self_collisions = True
         self.robot.actuators['base_legs'] = ParkourDCMotorCfg(
             joint_names_expr=[".*_hip_joint", ".*_thigh_joint", ".*_calf_joint"],
-            ### reference https://github.com/unitreerobotics/unitree_ros/blob/master/robots/go2_description/urdf/go2_description.urdf
-            # effort_limit={
-            #             '.*_hip_joint':23.7,
-            #             '.*_thigh_joint':23.7,
-            #             '.*_calf_joint':45.43,
-            #             },
-            # saturation_effort={
-            #             '.*_hip_joint':23.7,
-            #             '.*_thigh_joint':23.7,
-            #             '.*_calf_joint':45.43,
-            #             },
-            # velocity_limit={
-            #             '.*_hip_joint':30.1,
-            #             '.*_thigh_joint':30.1,
-            #             '.*_calf_joint':15.70,
-            #             },
             effort_limit={
                         '.*_hip_joint':35.0,
                         '.*_thigh_joint':40.0,
@@ -95,22 +79,6 @@ class ParkourDefaultSceneCfg(InteractiveSceneCfg):
                         '.*_thigh_joint':30.1,
                         '.*_calf_joint':30.1,
                         },
-            ### reference https://github.com/chengxuxin/extreme-parkour/blob/main/legged_gym/resources/robots/a1/urdf/a1.urdf
-            # effort_limit={
-            #             '.*_hip_joint':20,
-            #             '.*_thigh_joint':30.,
-            #             '.*_calf_joint':30.,
-            #             },
-            # saturation_effort={
-            #             '.*_hip_joint':23.7,
-            #             '.*_thigh_joint':23.7,
-            #             '.*_calf_joint':45.43,
-            #             },
-            # velocity_limit={
-            #             '.*_hip_joint':52.4,
-            #             '.*_thigh_joint':28.6,
-            #             '.*_calf_joint':28.6,
-            #             },
             stiffness=40.0,
             damping=1.0,
             friction=0.0,
