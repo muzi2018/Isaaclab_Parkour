@@ -91,7 +91,7 @@ CAMERA_CFG = RayCasterCameraCfg(
     data_types=["distance_to_image_plane"],
     offset=RayCasterCameraCfg.OffsetCfg(
         pos=(0.33, 0.0, 0.08), 
-        rot=quat_from_euler_xyz_tuple(*tuple(torch.deg2rad(torch.tensor([180,70,-90])))), 
+        rot=quat_from_euler_xyz_tuple(*tuple(torch.deg2rad(torch.tensor([180,80,-90])))), 
         convention="ros"
         ),
     depth_clipping_behavior = 'max',
@@ -110,7 +110,7 @@ CAMERA_USD_CFG = AssetBaseCfg(
     spawn=sim_utils.UsdFileCfg(usd_path=os.path.join(agents.__path__[0],'d435.usd')),
     init_state=AssetBaseCfg.InitialStateCfg(
             pos=(0.33, 0.0, 0.08), 
-            rot=quat_from_euler_xyz_tuple(*tuple(torch.deg2rad(torch.tensor([180,70,-90]))))
+            rot=quat_from_euler_xyz_tuple(*tuple(torch.deg2rad(torch.tensor([180,80,-90]))))
     )
 )
 

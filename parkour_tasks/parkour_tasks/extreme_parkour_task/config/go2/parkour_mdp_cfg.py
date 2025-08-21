@@ -83,7 +83,7 @@ class StudentObservationsCfg:
             func=observations.image_features,
             params={            
             "sensor_cfg":SceneEntityCfg("depth_camera"),
-            "resize": (87, 58),
+            "resize": (58, 87),
             "buffer_len": 2,
             },
         )

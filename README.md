@@ -18,13 +18,13 @@ cd parkour_tasks && pip3 install -e .
 
 ## How to train policies
 
-### 1. Teacher Policy
+### 1.1. Training Teacher Policy
 
 ```
 python scripts/rsl_rl/train.py --task Isaac-Extreme-Parkour-Teacher-Unitree-Go2-v0 --seed 1 --headless
 ```
 
-### 2. Student Policy
+### 1.2. Training Student Policy
 
 ```
 python scripts/rsl_rl/train.py --task Isaac-Extreme-Parkour-Student-Unitree-Go2-v0 --seed 1 --headless
@@ -32,26 +32,40 @@ python scripts/rsl_rl/train.py --task Isaac-Extreme-Parkour-Student-Unitree-Go2-
 
 ## How to play your policy 
 
-### 1.1. Pretrained Teacher Policy 
+### 2.1. Pretrained Teacher Policy 
 
 Download Teacher Policy by this [link](https://drive.google.com/file/d/1JtGzwkBixDHUWD_npz2Codc82tsaec_w/view?usp=sharing)
 
-### 1.2. Playing Teacher Policy 
+### 2.2. Playing Teacher Policy 
 
 ```
-
+python scripts/rsl_rl/play.py --task Isaac-Extreme-Parkour-Teacher-Unitree-Go2-Play-v0 --num_envs 16
 ```
 
-### 2.1 Pretrained Student Policy 
+### 3.1 Pretrained Student Policy 
 
 Download Student Policy by this [link]()
 
-### 2.2. Playing Student Policy 
+### 3.2. Playing Student Policy 
 
 ```
-
+python scripts/rsl_rl/play.py --task Isaac-Extreme-Parkour-Student-Unitree-Go2-Play-v0 --num_envs 16
 ```
 
+## How to play deploy in IsaacLab
+
+
+### 3.1. Playing Teacher Policy 
+
+```
+python scripts/rsl_rl/demo.py --task Isaac-Extreme-Parkour-Teacher-Unitree-Go2-Play-v0 
+```
+
+### 3.2. Playing Student Policy 
+
+```
+python scripts/rsl_rl/demo.py --task Isaac-Extreme-Parkour-Student-Unitree-Go2-Play-v0 
+```
 
 ## Testing your modules
 

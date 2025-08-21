@@ -29,7 +29,7 @@ class reward_feet_edge(ManagerTermBase):
         size_x, size_y = env.scene.terrain.cfg.terrain_generator.size
         self.rows_offset = (size_x * env.scene.terrain.cfg.terrain_generator.num_rows/2)
         self.cols_offset = (size_y * env.scene.terrain.cfg.terrain_generator.num_cols/2)
-        total_x_edge_maskes = self.parkour_event.total_x_edge_maskes
+        total_x_edge_maskes = torch.from_numpy(self.parkour_event.terrain.terrain_generator_class.x_edge_maskes).to(device = self.device)
         self.x_edge_masks_tensor = total_x_edge_maskes.permute(0, 2, 1, 3).reshape(
             env.scene.terrain.terrain_generator_class.total_width_pixels, env.scene.terrain.terrain_generator_class.total_length_pixels
         )

@@ -57,7 +57,12 @@ from isaaclab.utils.dict import print_dict
 from isaaclab.utils.pretrained_checkpoint import get_published_pretrained_checkpoint
 from parkour_tasks.extreme_parkour_task.config.go2.agents.parkour_rl_cfg import ParkourRslRlOnPolicyRunnerCfg
 
-from scripts.rsl_rl.exporter import export_policy_as_jit, export_policy_as_onnx
+from scripts.rsl_rl.exporter import (
+export_teacher_policy_as_jit, 
+export_teacher_policy_as_onnx,
+export_deploy_policy_as_jit, 
+export_deploy_policy_as_onnx,
+)
 from scripts.rsl_rl.vecenv_wrapper import ParkourRslRlVecEnvWrapper
 
 import isaaclab_tasks  # noqa: F401
@@ -117,32 +122,43 @@ def main():
     ppo_runner.load(resume_path)
     print(ppo_runner)
     # obtain the trained policy for inference
-    policy = ppo_runner.get_inference_policy(device=env.unwrapped.device)
-    estimator = ppo_runner.get_estimator_inference_policy(device=env.device) 
-    # extract the neural network module
-    # we do this in a try-except to maintain backwards compatibility.
-    try:
-        # version 2.3 onwards
-        policy_nn = ppo_runner.alg.policy
-    except AttributeError:
-        # version 2.2 and below
-        policy_nn = ppo_runner.alg.actor_critic
 
-    # export policy to onnx/jit
-    export_model_dir = os.path.join(os.path.dirname(resume_path), "exported")
-    export_policy_as_jit(policy_nn, ppo_runner.obs_normalizer, path=export_model_dir, filename="policy.pt")
-    export_policy_as_onnx(
-        policy_nn, normalizer=ppo_runner.obs_normalizer, path=export_model_dir, filename="policy.onnx"
-    )
+    estimator = ppo_runner.get_estimator_inference_policy(device=env.device) 
+    if agent_cfg.algorithm.class_name == "DistillationWithExtractor":
+        policy = ppo_runner.get_inference_depth_policy(device=env.unwrapped.device)
+        depth_encoder = ppo_runner.get_depth_encoder_inference_policy(device=env.device)
+        policy_nn = ppo_runner.alg.depth_actor
+        export_model_dir = os.path.join(os.path.dirname(resume_path), "exported_deploy")
+        export_deploy_policy_as_jit(policy_nn, 
+                                    estimator,
+                                    depth_encoder,
+                                    ppo_runner.obs_normalizer, 
+                                    path=export_model_dir, 
+                                    filename="policy.pt")
+        export_deploy_policy_as_onnx(
+                            policy_nn, 
+                            estimator,
+                            depth_encoder,
+                            agent_cfg,
+                            normalizer=ppo_runner.obs_normalizer, 
+                            path=export_model_dir, 
+                            filename="policy.onnx"
+                        )
+
+    else:
+        policy = ppo_runner.get_inference_policy(device=env.unwrapped.device)
+        policy_nn = ppo_runner.alg.policy
+        export_model_dir = os.path.join(os.path.dirname(resume_path), "exported_teacher")
+        export_teacher_policy_as_jit(policy_nn, ppo_runner.obs_normalizer, path=export_model_dir, filename="policy.pt")
+        export_teacher_policy_as_onnx(
+            policy_nn, normalizer=ppo_runner.obs_normalizer, path=export_model_dir, filename="policy.onnx"
+        )
 
     dt = env.unwrapped.step_dt
     estimator_paras = agent_cfg.to_dict()["estimator"]
     num_prop = estimator_paras["num_prop"]
     num_scan = estimator_paras["num_scan"]
     num_priv_explicit = estimator_paras["num_priv_explicit"]
-    history_len = 10 
-    if agent_cfg.algorithm.class_name == "DistillationWithExtractor":
-        depth_encoder = ppo_runner.get_depth_encoder_inference_policy(device=env.device)
     # reset environment
     obs, extras = env.get_observations()
     timestep = 0
@@ -153,9 +169,9 @@ def main():
         if agent_cfg.algorithm.class_name != "DistillationWithExtractor":
             with torch.inference_mode():
                 # agent stepping
-                # priv_states_estimated = estimator(obs[:, :num_prop])
-                # obs[:, num_prop+num_scan:num_prop+num_scan+priv_states_dim] = priv_states_estimated
-                actions = policy(obs)
+                priv_states_estimated = estimator.inference(obs[:, :num_prop])
+                obs[:, num_prop+num_scan:num_prop+num_scan+num_priv_explicit] = priv_states_estimated
+                actions = policy(obs, hist_encoding = True)
             # env stepping
         else:
             depth_camera = extras["observations"]['depth_camera'].to(env.device)

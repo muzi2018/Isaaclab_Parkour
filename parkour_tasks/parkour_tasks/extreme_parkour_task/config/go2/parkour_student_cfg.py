@@ -47,7 +47,7 @@ class ParkourStudentSceneCfg(ParkourTeacherSceneCfg):
 @configclass
 class UnitreeGo2StudentParkourEnvCfg(ParkourManagerBasedRLEnvCfg):
     viewer = VIEWER 
-    scene: ParkourStudentSceneCfg = ParkourStudentSceneCfg(num_envs=192, env_spacing=1.)
+    scene: ParkourStudentSceneCfg = ParkourStudentSceneCfg(num_envs=77, env_spacing=1.)
     # Basic settings
     observations: StudentObservationsCfg = StudentObservationsCfg()
     actions: ActionsCfg = ActionsCfg()
@@ -82,14 +82,13 @@ class UnitreeGo2StudentParkourEnvCfg_PLAY(UnitreeGo2StudentParkourEnvCfg):
         # post init of parent
         super().__post_init__()
         self.scene.depth_camera_usd = CAMERA_USD_CFG
-        self.parkours.base_parkour.debug_vis = True
-        self.commands.base_velocity.debug_vis = True
-        self.scene.num_envs = 16
-        # spawn the robot randomly in the grid (instead of their terrain levels)
+        # self.parkours.base_parkour.debug_vis = True
+        # self.commands.base_velocity.debug_vis = True
+        self.scene.num_envs = 1
         # self.scene.terrain.max_init_terrain_level = None
         if self.scene.terrain.terrain_generator is not None:
-            self.scene.terrain.terrain_generator.num_rows = 5
-            self.scene.terrain.terrain_generator.num_cols = 5
+            self.scene.terrain.terrain_generator.num_rows = 2
+            self.scene.terrain.terrain_generator.num_cols = 2
             self.scene.terrain.terrain_generator.random_difficulty = True
             self.scene.terrain.terrain_generator.difficulty_range = (0.7,1.0)
             self.scene.terrain.terrain_generator.curriculum = False
@@ -98,7 +97,7 @@ class UnitreeGo2StudentParkourEnvCfg_PLAY(UnitreeGo2StudentParkourEnvCfg):
         self.events.randomize_rigid_body_mass = None
         self.events.physics_material = None
         self.events.push_by_setting_velocity = None
-        self.events.random_camera_position.params['rot_noise_range'] = {'pitch':(0, 1)}
+        self.events.random_camera_position.params['rot_noise_range'] = {'pitch':(0, 0)}
         self.commands.base_velocity.resampling_time_range = (60.,60.)
         self.episode_length_s = 60.
 

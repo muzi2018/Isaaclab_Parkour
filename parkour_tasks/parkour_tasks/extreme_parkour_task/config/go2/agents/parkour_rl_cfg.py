@@ -36,7 +36,6 @@ class ParkourRslRlStateHistEncoderCfg(ParkourRslRlBaseCfg):
 class ParkourRslRlDepthEncoderCfg(ParkourRslRlBaseCfg):
     backbone_class_name: str = "DepthOnlyFCBackbone58x87" 
     encoder_class_name: str = "RecurrentDepthBackbone" 
-    buffer_len: int = 1 
     depth_shape: tuple[int] = (87, 58)
     hidden_dims: int = 512
     learning_rate: float = 1.e-3

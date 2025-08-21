@@ -46,7 +46,7 @@ def parkour_field_to_mesh(func: Callable) -> Callable:
         cfg.size = terrain_size
         mesh = trimesh.Trimesh(vertices=vertices, faces=triangles)
         if cfg.use_simplified:
-            mesh = mesh.simplify_quadric_decimation(face_count = int(0.85*triangles.shape[0]) , aggression=7)
+            mesh = mesh.simplify_quadric_decimation(face_count = int(0.65*triangles.shape[0]) , aggression=3)
         # compute origin
         x1 = int((cfg.size[0] * 0.5 - 1) / cfg.horizontal_scale)
         x2 = int((cfg.size[0] * 0.5 + 1) / cfg.horizontal_scale)

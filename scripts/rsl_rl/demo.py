@@ -3,7 +3,6 @@ Code reference:
 1. https://docs.omniverse.nvidia.com/kit/docs/carbonite/167.3/api/enum_namespacecarb_1_1input_1a41f626f5bfc1020c9bd87f5726afdec1.html#namespacecarb_1_1input_1a41f626f5bfc1020c9bd87f5726afdec1
 2. https://docs.omniverse.nvidia.com/kit/docs/carbonite/167.3/api/enum_namespacecarb_1_1input_1af1c4ed7e318b3719809f13e2a48e2f2d.html#namespacecarb_1_1input_1af1c4ed7e318b3719809f13e2a48e2f2d
 3. https://docs.omniverse.nvidia.com/kit/docs/carbonite/167.3/docs/python/bindings.html#carb.input.GamepadInput
-
 """
 import argparse
 import os
@@ -61,6 +60,7 @@ from scripts.rsl_rl.vecenv_wrapper import ParkourRslRlVecEnvWrapper
 from parkour_tasks.extreme_parkour_task.config.go2.agents.parkour_rl_cfg import ParkourRslRlOnPolicyRunnerCfg
 
 from parkour_tasks.extreme_parkour_task.config.go2.parkour_teacher_cfg import UnitreeGo2TeacherParkourEnvCfg_PLAY
+from parkour_tasks.extreme_parkour_task.config.go2.parkour_student_cfg import UnitreeGo2StudentParkourEnvCfg_PLAY
 
 class ParkourDemoGO2:
     def __init__(self):
@@ -78,10 +78,10 @@ class ParkourDemoGO2:
         else:
             checkpoint = get_checkpoint_path(log_root_path, agent_cfg.load_run, agent_cfg.load_checkpoint)
 
-
+        self.agent_cfg = agent_cfg 
         # create envionrment
-        env_cfg = UnitreeGo2TeacherParkourEnvCfg_PLAY()
-        env_cfg.scene.num_envs = 25
+        env_cfg = UnitreeGo2TeacherParkourEnvCfg_PLAY() if agent_cfg.algorithm.class_name == 'PPOWithExtractor' else UnitreeGo2StudentParkourEnvCfg_PLAY()
+        env_cfg.scene.num_envs = args_cli.num_envs
         env_cfg.episode_length_s = 1000000
         env_cfg.curriculum = None
         self.env_cfg = env_cfg
@@ -92,7 +92,14 @@ class ParkourDemoGO2:
         ppo_runner = OnPolicyRunnerWithExtractor(self.env, agent_cfg.to_dict(), log_dir=None, device=self.device)
         ppo_runner.load(checkpoint)
         # obtain the trained policy for inference
-        self.policy = ppo_runner.get_inference_policy(device=self.device)
+        self.estimator = ppo_runner.get_estimator_inference_policy(device=self.device)
+        if agent_cfg.algorithm.class_name == 'PPOWithExtractor':
+            self.policy = ppo_runner.get_inference_policy(device=self.device)
+            self.depth_encoder = None
+        else:
+            self.policy = ppo_runner.get_inference_depth_policy(device=self.device)
+            self.depth_encoder = ppo_runner.get_depth_encoder_inference_policy(device=self.device)
+
 
         self.create_camera()
         self.commands = torch.zeros(env_cfg.scene.num_envs, 3, device=self.device)
@@ -102,7 +109,8 @@ class ParkourDemoGO2:
         self._prim_selection = omni.usd.get_context().get_selection()
         self._selected_id = None
         self._previous_selected_id = None
-        self._camera_local_transform = torch.tensor([-2.5, 0.0, 0.8], device=self.device)
+        # self._camera_local_transform = torch.tensor([-2.5, 0.0, 0.8], device=self.device)
+        self._camera_local_transform = torch.tensor([-0., 2.6, 1.6], device=self.device)
 
     def create_camera(self):
         """Creates a camera to be used for third-person view."""
@@ -136,9 +144,9 @@ class ParkourDemoGO2:
             # backward command
             carb.input.GamepadInput.LEFT_STICK_DOWN: self.env_cfg.commands.base_velocity.ranges.lin_vel_x[0],
             # right command
-            carb.input.GamepadInput.LEFT_STICK_RIGHT:  self.env_cfg.commands.base_velocity.ranges.ang_vel_z[0],
+            carb.input.GamepadInput.LEFT_STICK_RIGHT:  self.env_cfg.commands.base_velocity.ranges.heading[0],
             # left command
-            carb.input.GamepadInput.LEFT_STICK_LEFT: self.env_cfg.commands.base_velocity.ranges.ang_vel_z[1],
+            carb.input.GamepadInput.LEFT_STICK_LEFT: self.env_cfg.commands.base_velocity.ranges.heading[1],
         }
 
     def _on_gamepad_event(self, event):
@@ -188,7 +196,7 @@ class ParkourDemoGO2:
         # Reset commands for previously selected robot if a new one is selected
         if self._previous_selected_id is not None and self._previous_selected_id != self._selected_id:
             self.env.unwrapped.command_manager.reset([self._previous_selected_id])
-            self.commands[:, 0:2] = self.env.unwrapped.command_manager.get_command("base_velocity")
+            self.commands[:, :] = self.env.unwrapped.command_manager.get_command("base_velocity")
 
     def _update_camera(self):
         """Updates the per-frame transform of the third-person view camera to follow
@@ -208,15 +216,32 @@ class ParkourDemoGO2:
 def main():
     """Main function."""
     demo_go2 = ParkourDemoGO2()
-    obs, _ = demo_go2.env.reset()
+    actor_param = demo_go2.agent_cfg.policy.actor
+    num_priv_explicit = actor_param.num_priv_explicit
+    num_scan = actor_param.num_scan
+    num_prop = actor_param.num_prop
+    obs, extras = demo_go2.env.reset()
     while simulation_app.is_running():
         # check for selected robots
         demo_go2.update_selected_object()
         with torch.inference_mode():
-            action = demo_go2.policy(obs)
-            obs, _, _, _ = demo_go2.env.step(action)
-            # overwrite command based on keyboard input
+
             obs[:, 9] = demo_go2.commands[:,0]
+            if demo_go2.agent_cfg.algorithm.class_name != "DistillationWithExtractor":
+                priv_states_estimated = demo_go2.estimator.inference(obs[:, :num_prop])
+                obs[:, num_prop+num_scan:num_prop+num_scan+num_priv_explicit] = priv_states_estimated
+                action = demo_go2.policy(obs)
+            else:
+                depth_camera = extras["observations"]['depth_camera'].to(demo_go2.device)
+                obs_student = obs[:, :num_prop].clone()
+                obs_student[:, 6:8] = 0
+                depth_latent_and_yaw = demo_go2.depth_encoder(depth_camera, obs_student)
+                depth_latent = depth_latent_and_yaw[:, :-2]
+                yaw = depth_latent_and_yaw[:, -2:]
+                obs[:, 6:8] = 1.5*yaw
+                action = demo_go2.policy(obs, hist_encoding=True, scandots_latent=depth_latent)
+            obs, _, _, extras = demo_go2.env.step(action)
+            # overwrite command based on keyboard input
 
 if __name__ == "__main__":
     main()

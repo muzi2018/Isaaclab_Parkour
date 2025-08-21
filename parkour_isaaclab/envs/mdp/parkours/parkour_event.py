@@ -69,8 +69,6 @@ class ParkourEvent(ParkourTerm):
             self.future_goal_idx[:, 0] = False
             self.env_per_heights = self.total_heights[self.terrain.terrain_levels, self.terrain.terrain_types]
        
-        self.total_x_edge_maskes = torch.from_numpy(terrain_generator.x_edge_maskes).to(device = self.device)
-
         self.total_terrain_names = terrain_generator.terrain_names
         numpy_terrain_levels = self.terrain.terrain_levels.detach().cpu().numpy() ## string type can't convert to torch
         numpy_terrain_types = self.terrain.terrain_types.detach().cpu().numpy()

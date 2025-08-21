@@ -34,8 +34,6 @@ class ExtremeParkourObservations(ManagerTermBase):
         self.asset: Articulation = env.scene[cfg.params["asset_cfg"].name]
         self.sensor_cfg = cfg.params["sensor_cfg"]
         self.asset_cfg = cfg.params["asset_cfg"]
-        self.total_width_pixels = env.scene.terrain.terrain_generator_class.total_width_pixels
-        self.total_length_pixels = env.scene.terrain.terrain_generator_class.total_length_pixels
         self.history_length = cfg.params['history_length']
         self._obs_history_buffer = torch.zeros(self.num_envs, self.history_length, 3 + 2 + 3 + 4 + 36 + 5, device=self.device)
         self.global_counter = 0 
@@ -158,12 +156,12 @@ class image_features(ManagerTermBase):
         resized = cfg.params["resize"]
         self.buffer_len = cfg.params['buffer_len']
         self.resize_transform = torchvision.transforms.Resize(
-                                    (resized[1], resized[0]), 
+                                    (resized[0], resized[1]), 
                                     interpolation=torchvision.transforms.InterpolationMode.BICUBIC).to(env.device)
         self.depth_buffer = torch.zeros(self.num_envs,  
                                         self.buffer_len, 
-                                        resized[1], 
-                                        resized[0]).to(self.device)
+                                        resized[0], 
+                                        resized[1]).to(self.device)
         self.global_counter = 0 
 
     def reset(self, env_ids: Sequence[int] | None = None) -> None:
@@ -188,7 +186,6 @@ class image_features(ManagerTermBase):
                 processed_image = self._process_depth_image(depth_image)
                 self.depth_buffer[env_id] = torch.cat([self.depth_buffer[env_id, 1:], 
                                                     processed_image.to(self.device).unsqueeze(0)], dim=0)
-                
         return self.depth_buffer[:, -2].to(env.device)
 
     def _process_depth_image(self, depth_image):
@@ -206,21 +203,31 @@ class image_features(ManagerTermBase):
         depth_image = (depth_image - 0.1) / (self.clipping_range - 0.1)  - 0.5
         return depth_image
     
-def obervation_delta_yaw_ok(
-    env: ParkourManagerBasedRLEnv,    
-    parkour_name: str,
-    threshold: float,
-    asset_cfg: SceneEntityCfg = SceneEntityCfg("robot"),
-):
-    parkour_event: ParkourEvent =  env.parkour_manager.get_term(parkour_name)
-    asset: Articulation = env.scene[asset_cfg.name]
-    robot_root_pos_w = asset.data.root_pos_w[:, :2] - parkour_event.env_origins[:, :2]
-    target_pos_rel = parkour_event.cur_goals[:, :2] - robot_root_pos_w
-    norm = torch.norm(target_pos_rel, dim=-1, keepdim=True)
-    target_vec_norm = target_pos_rel / (norm + 1e-5)
-    q = asset.data.root_state_w[:, 3:7]
-    target_yaw = torch.atan2(target_vec_norm[:, 1], target_vec_norm[:, 0])
-    yaw = torch.atan2(2*(q[:,0]*q[:,3] + q[:,1]*q[:,2]),
-                            1 - 2*(q[:,2]**2 + q[:,3]**2))
-    delta_yaw = target_yaw - yaw
-    return delta_yaw < threshold
+class obervation_delta_yaw_ok(ManagerTermBase):
+
+    def __init__(self, cfg: ObservationTermCfg, env: ParkourManagerBasedRLEnv):
+        super().__init__(cfg, env)
+        self.global_counter = 0 
+        self.delta_yaw = torch.zeros(self.num_envs, device=self.device)
+
+    def __call__(
+        self,
+        env: ParkourManagerBasedRLEnv,    
+        parkour_name: str,
+        threshold: float,
+        asset_cfg: SceneEntityCfg = SceneEntityCfg("robot"),
+    ):
+        self.global_counter += 1
+        if self.global_counter % 5 == 0:
+            parkour_event: ParkourEvent =  env.parkour_manager.get_term(parkour_name)
+            asset: Articulation = env.scene[asset_cfg.name]
+            robot_root_pos_w = asset.data.root_pos_w[:, :2] - parkour_event.env_origins[:, :2]
+            target_pos_rel = parkour_event.cur_goals[:, :2] - robot_root_pos_w
+            norm = torch.norm(target_pos_rel, dim=-1, keepdim=True)
+            target_vec_norm = target_pos_rel / (norm + 1e-5)
+            q = asset.data.root_state_w[:, 3:7]
+            target_yaw = torch.atan2(target_vec_norm[:, 1], target_vec_norm[:, 0])
+            yaw = torch.atan2(2*(q[:,0]*q[:,3] + q[:,1]*q[:,2]),
+                                    1 - 2*(q[:,2]**2 + q[:,3]**2))
+            self.delta_yaw = target_yaw - yaw
+        return self.delta_yaw < threshold

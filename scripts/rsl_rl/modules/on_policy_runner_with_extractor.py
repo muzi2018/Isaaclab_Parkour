@@ -586,7 +586,7 @@ class OnPolicyRunnerWithExtractor(OnPolicyRunner):
         self.alg.estimator.eval() # switch to evaluation mode (dropout for example)
         if device is not None:
             self.alg.estimator.to(device)
-        return self.alg.estimator.inference
+        return self.alg.estimator
     
     def get_depth_encoder_inference_policy(self, device=None):
         self.alg.depth_encoder.eval()
@@ -603,4 +603,15 @@ class OnPolicyRunnerWithExtractor(OnPolicyRunner):
             if device is not None:
                 self.obs_normalizer.to(device)
             policy = lambda x: self.alg.policy.act_inference(self.obs_normalizer(x))  # noqa: E731
+        return policy
+
+    def get_inference_depth_policy(self, device=None):
+        self.eval_mode()  # switch to evaluation mode (dropout for example)
+        if device is not None:
+            self.alg.depth_actor.to(device)
+        policy = self.alg.depth_actor
+        if self.cfg["empirical_normalization"]:
+            if device is not None:
+                self.obs_normalizer.to(device)
+            policy = lambda x: self.alg.depth_actor(self.obs_normalizer(x))  # noqa: E731
         return policy

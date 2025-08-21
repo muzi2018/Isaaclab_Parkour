@@ -17,7 +17,7 @@ class ParkourCommandCfg(CommandTermCfg):
     @configclass
     class Ranges:
         lin_vel_x: tuple[float, float] = MISSING
-        heading: tuple[float, float] | None = None
+        heading: tuple[float, float] | None = MISSING
 
     @configclass 
     class Clips:

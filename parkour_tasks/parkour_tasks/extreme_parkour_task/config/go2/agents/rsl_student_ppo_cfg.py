@@ -35,8 +35,8 @@ class UnitreeGo2ParkourStudentPPORunnerCfg(ParkourRslRlOnPolicyRunnerCfg):
     )
     depth_encoder = ParkourRslRlDepthEncoderCfg(
         hidden_dims = 512,
-        learning_rate= 2e-4,
-        num_steps_per_env = 24
+        learning_rate= 5e-4,
+        num_steps_per_env = 24*3
     )
 
     algorithm = ParkourRslRlDistillationAlgorithmCfg(
