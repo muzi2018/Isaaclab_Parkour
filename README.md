@@ -1,3 +1,12 @@
+# Isaaclab_Parkour
+
+Isaaclab based Parkour locomotion 
+
+Base model: [Extreme-Parkour](https://extreme-parkour.github.io/)
+
+https://github.com/user-attachments/assets/aa9f7ece-83c1-404f-be50-6ae6a3ba3530
+
+
 ## How to install 
 
 ```
@@ -30,17 +39,27 @@ python scripts/rsl_rl/train.py --task Isaac-Extreme-Parkour-Teacher-Unitree-Go2-
 python scripts/rsl_rl/train.py --task Isaac-Extreme-Parkour-Student-Unitree-Go2-v0 --seed 1 --headless
 ```
 
+### 1.3. Training Student Policy by Multi-GPU
+
+```
+python -m torch.distributed.run --nnodes=1 --nproc_per_node=3 scripts/rsl_rl/train.py --task=Isaac-Extreme-Parkour-Student-Unitree-Go2-v0 --headless --distributed
+```
+
 ## How to play your policy 
 
 ### 2.1. Pretrained Teacher Policy 
 
 Download Teacher Policy by this [link](https://drive.google.com/file/d/1JtGzwkBixDHUWD_npz2Codc82tsaec_w/view?usp=sharing)
 
+
 ### 2.2. Playing Teacher Policy 
 
 ```
 python scripts/rsl_rl/play.py --task Isaac-Extreme-Parkour-Teacher-Unitree-Go2-Play-v0 --num_envs 16
 ```
+
+[Screencast from 2025년 08월 16일 12시 43분 38초.webm](https://github.com/user-attachments/assets/ff1f58db-2439-449c-b596-5a047c526f1f)
+
 
 ### 3.1 Pretrained Student Policy 
 
@@ -52,14 +71,19 @@ Download Student Policy by this [link]()
 python scripts/rsl_rl/play.py --task Isaac-Extreme-Parkour-Student-Unitree-Go2-Play-v0 --num_envs 16
 ```
 
+https://github.com/user-attachments/assets/82a5cecb-ffbf-4a46-8504-79188a147c40
+
+
 ## How to play deploy in IsaacLab
 
+[Screencast from 2025년 08월 20일 18시 55분 01초.webm](https://github.com/user-attachments/assets/4fb1ba4b-1780-49b0-a739-bff0b95d9b66)
 
 ### 3.1. Playing Teacher Policy 
 
 ```
 python scripts/rsl_rl/demo.py --task Isaac-Extreme-Parkour-Teacher-Unitree-Go2-Play-v0 
 ```
+
 
 ### 3.2. Playing Student Policy 
 
@@ -91,6 +115,15 @@ press 0: Use free camera (can use mouse)
 press 1: Not use free camera (default)
 ```
 
-### Supported Parkour tasks
+### TODO list
 
-[o] [Extreme-Parkour](https://github.com/chengxuxin/extreme-parkour) 
+* [x] Opening code for training Teacher model  
+
+* [x] Opening code for training Distillation 
+
+* [x] Opening code for deploying policy in IsaacLab by demo: code refer [site](https://isaac-sim.github.io/IsaacLab/main/source/overview/showroom.html)  
+
+* [ ] Opening code for deploying policy by sim2sim (mujoco)
+
+* [ ] Opening code for deploying policy in real world 
+
