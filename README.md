@@ -152,3 +152,15 @@ year={2023}
    doi={10.1109/LRA.2023.3270034}
 }
 ```
+
+```
+Copyright (c) 2025, Sangbaek Park
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software …
+
+The use of this software in academic or scientific publications requires
+explicit citation of the following repository:
+
+https://github.com/CAI23sbP/Isaaclab_Parkour
+```
