@@ -18,7 +18,7 @@ https://github.com/CAI23sbP/Isaaclab_Parkour.git ## cloning this repo
 ```
 
 ```
-cd parkour_workspace && pip3 install -e .
+cd Isaaclab_Parkour && pip3 install -e .
 ```
 
 ```
