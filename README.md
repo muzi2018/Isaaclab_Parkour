@@ -115,6 +115,18 @@ press 0: Use free camera (can use mouse)
 press 1: Not use free camera (default)
 ```
 
+
+## How to Deploy sim2sim or sim2real
+
+it is future work, i will open this repo as soon as possible
+
+sim2sim: isaaclab to mujoco
+
+sim2real: isaaclab to real world
+
+see this [repo](https://github.com/CAI23sbP/go2_parkour_deploy)
+
+
 ### TODO list
 
 * [x] Opening code for training Teacher model  
