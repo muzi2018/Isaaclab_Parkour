@@ -355,18 +355,20 @@ class OnPolicyRunnerWithExtractor(OnPolicyRunner):
             delta_yaw_ok_buffer = []
             yaws_buffer = []
             for _ in range(self.depth_encoder_cfg['num_steps_per_env']):
-                obs_prop_depth = obs[:, :self.depth_encoder_cfg['num_prop']].clone()
-                obs_prop_depth[:, 6:8] = 0
-                depth_latent_and_yaw = self.alg.depth_encoder(additional_obs["depth_camera"].clone(), obs_prop_depth)  # clone is crucial to avoid in-place operation
-                depth_latent = depth_latent_and_yaw[:, :-2]
-                yaw = 1.5*depth_latent_and_yaw[:, -2:]
+                if self.env.unwrapped.common_step_counter %5 == 0:
+                    obs_prop_depth = obs[:, :self.depth_encoder_cfg['num_prop']].clone()
+                    obs_prop_depth[:, 6:8] = 0
+                    depth_latent_and_yaw = self.alg.depth_encoder(additional_obs["depth_camera"].clone(), obs_prop_depth)  # clone is crucial to avoid in-place operation
+                    depth_latent = depth_latent_and_yaw[:, :-2]
+                    yaw = 1.5*depth_latent_and_yaw[:, -2:]
+                    yaws_buffer.append(obs[:,6:8].detach() - yaw)
                 with torch.no_grad():
                     actions_teacher = self.alg.policy.act_inference(obs, hist_encoding=True, scandots_latent=None)
                     delta_yaw_ok_buffer.append(torch.nonzero(additional_obs["delta_yaw_ok"]).size(0) / additional_obs["delta_yaw_ok"].numel())
                 obs[additional_obs["delta_yaw_ok"], 6:8] = yaw.detach()[additional_obs["delta_yaw_ok"]]
                 actions_student = self.alg.depth_actor(obs, hist_encoding=True, scandots_latent=depth_latent)
                 actions_buffer.append(actions_teacher.detach() - actions_student)
-                yaws_buffer.append(obs[:, 6:8].detach() - yaw )
+                
                 if it < num_pretrain_iter:
                     # Step the environment
                     obs, _, dones, infos = self.env.step(actions_teacher.detach().to(self.env.device))
@@ -381,7 +383,6 @@ class OnPolicyRunnerWithExtractor(OnPolicyRunner):
                 additional_obs['depth_camera'] = infos["observations"]['depth_camera']
                 # perform normalization
                 obs = self.obs_normalizer(obs)
-                self.alg.policy.reset(dones)
                 if self.log_dir is not None:
                     if "episode" in infos:
                         ep_infos.append(infos["episode"])
@@ -533,7 +534,6 @@ class OnPolicyRunnerWithExtractor(OnPolicyRunner):
         if self.empirical_normalization:
             saved_dict["obs_norm_state_dict"] = self.obs_normalizer.state_dict()
             saved_dict["privileged_obs_norm_state_dict"] = self.privileged_obs_normalizer.state_dict()
-        
         if self.depth_encoder_cfg is not None :
             saved_dict['depth_encoder_state_dict'] = self.alg.depth_encoder.state_dict()
             saved_dict['depth_actor_state_dict'] = self.alg.depth_actor.state_dict()
@@ -556,7 +556,6 @@ class OnPolicyRunnerWithExtractor(OnPolicyRunner):
                 self.privileged_obs_normalizer.load_state_dict(loaded_dict["privileged_obs_norm_state_dict"])
             else:
                 self.privileged_obs_normalizer.load_state_dict(loaded_dict["obs_norm_state_dict"])
-
         if self.depth_encoder_cfg is not None:
             if 'depth_encoder_state_dict' not in loaded_dict:
                 warnings.warn("'depth_encoder_state_dict' key does not exist, not loading depth encoder...")
