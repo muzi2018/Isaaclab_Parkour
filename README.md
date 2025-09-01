@@ -118,7 +118,7 @@ press 1: Not use free camera (default)
 
 ## How to Deploy sim2sim or sim2real
 
-it is future work, i will open this repo as soon as possible
+it is a future work, i will open this repo as soon as possible
 
 sim2sim: isaaclab to mujoco
 
@@ -175,4 +175,10 @@ The use of this software in academic or scientific publications requires
 explicit citation of the following repository:
 
 https://github.com/CAI23sbP/Isaaclab_Parkour
+```
+
+## contact us 
+
+```
+sbp0783@hanyang.ac.kr
 ```
