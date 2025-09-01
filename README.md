@@ -14,7 +14,7 @@ cd IsaacLab ## going to IsaacLab
 ```
 
 ```
-git clone https://github.com/cailab-hy/parkour_workspace.git ## cloning this repo
+https://github.com/CAI23sbP/Isaaclab_Parkour.git ## cloning this repo
 ```
 
 ```
