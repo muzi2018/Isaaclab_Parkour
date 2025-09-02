@@ -18,6 +18,7 @@ from isaaclab.assets import Articulation
 from isaaclab.utils.math  import euler_xyz_from_quat, wrap_to_pi
 from parkour_isaaclab.envs.mdp.parkours import ParkourEvent 
 from collections.abc import Sequence
+import numpy as np 
 import cv2
 if TYPE_CHECKING:
     from parkour_isaaclab.envs import ParkourManagerBasedRLEnv
@@ -36,17 +37,14 @@ class ExtremeParkourObservations(ManagerTermBase):
         self.asset_cfg = cfg.params["asset_cfg"]
         self.history_length = cfg.params['history_length']
         self._obs_history_buffer = torch.zeros(self.num_envs, self.history_length, 3 + 2 + 3 + 4 + 36 + 5, device=self.device)
-        self.global_counter = 0 
         self.delta_yaw = torch.zeros(self.num_envs, device=self.device)
         self.delta_next_yaw = torch.zeros(self.num_envs, device=self.device)
         self.measured_heights = torch.zeros(self.num_envs, 132, device=self.device)
         self.env = env
-        self.episode_length_buf = torch.zeros(self.num_envs, device=self.device, dtype=torch.long)
         self.body_id = self.asset.find_bodies('base')[0]
         
     def reset(self, env_ids: Sequence[int] | None = None) -> None:
         self._obs_history_buffer[env_ids, :, :] = 0. 
-        self.episode_length_buf[env_ids] = 0
 
     def __call__(
         self,
@@ -56,22 +54,16 @@ class ExtremeParkourObservations(ManagerTermBase):
         parkour_name: str,
         history_length: int,
         ) -> torch.Tensor:
-        self.global_counter += 1
-        self.episode_length_buf +=1
         
         terrain_names = self.parkour_event.env_per_terrain_name
         env_idx_tensor = torch.tensor((terrain_names != 'parkour_flat')).to(dtype = torch.bool, device=self.device)
         invert_env_idx_tensor = torch.tensor((terrain_names == 'parkour_flat')).to(dtype = torch.bool, device=self.device)
         roll, pitch, yaw = euler_xyz_from_quat(self.asset.data.root_quat_w)
         imu_obs = torch.stack((wrap_to_pi(roll), wrap_to_pi(pitch)), dim=1).to(self.device)
-        if self.global_counter % 5 == 0:
-            q = self.asset.data.root_quat_w
-            yaw = torch.atan2(2*(q[:,0]*q[:,3] + q[:,1]*q[:,2]),
-                            1 - 2*(q[:,2]**2 + q[:,3]**2))
-            self.delta_yaw = self.parkour_event.target_yaw - yaw
-            self.delta_next_yaw = self.parkour_event.next_target_yaw - yaw
+        if env.common_step_counter % 5 == 0:
+            self.delta_yaw = self.parkour_event.target_yaw - wrap_to_pi(yaw)
+            self.delta_next_yaw = self.parkour_event.next_target_yaw - wrap_to_pi(yaw)
             self.measured_heights = self._get_heights()
-            
         commands = env.command_manager.get_command('base_velocity')
         obs_buf = torch.cat((
                             self.asset.data.root_ang_vel_b * 0.25,   #[1,3] 0~2
@@ -98,7 +90,7 @@ class ExtremeParkourObservations(ManagerTermBase):
                                   ],dim=-1)
         obs_buf[:, 6:8] = 0
         self._obs_history_buffer = torch.where(
-            (self.episode_length_buf <= 1)[:, None, None], 
+            (env.episode_length_buf <= 1)[:, None, None], 
             torch.stack([obs_buf] * self.history_length, dim=1),
             torch.cat([
                 self._obs_history_buffer[:, 1:],
@@ -146,7 +138,6 @@ class ExtremeParkourObservations(ManagerTermBase):
     def _get_heights(self):
         return torch.clip(self.ray_sensor.data.pos_w[:, 2].unsqueeze(1) - self.ray_sensor.data.ray_hits_w[..., 2] - 0.3, -1, 1).to(self.device)
 
-
 class image_features(ManagerTermBase):
     
     def __init__(self, cfg: ObservationTermCfg, env: ParkourManagerBasedRLEnv):
@@ -155,6 +146,7 @@ class image_features(ManagerTermBase):
         self.clipping_range = self.camera_sensor.cfg.max_distance
         resized = cfg.params["resize"]
         self.buffer_len = cfg.params['buffer_len']
+        self.debug_vis = cfg.params['debug_vis']
         self.resize_transform = torchvision.transforms.Resize(
                                     (resized[0], resized[1]), 
                                     interpolation=torchvision.transforms.InterpolationMode.BICUBIC).to(env.device)
@@ -162,12 +154,11 @@ class image_features(ManagerTermBase):
                                         self.buffer_len, 
                                         resized[0], 
                                         resized[1]).to(self.device)
-        self.global_counter = 0 
 
     def reset(self, env_ids: Sequence[int] | None = None) -> None:
         if env_ids is None:
             env_ids = torch.arange(0, self.num_envs)
-        depth_images = self.camera_sensor.data.output["distance_to_image_plane"].squeeze(-1)[env_ids]
+        depth_images = self.camera_sensor.data.output["distance_to_camera"].squeeze(-1)[env_ids]
         for depth_image, env_id in zip(depth_images, env_ids):
             processed_image = self._process_depth_image(depth_image)
             self.depth_buffer[env_id] = torch.stack([processed_image]* 2, dim=0)
@@ -177,15 +168,29 @@ class image_features(ManagerTermBase):
         env: ParkourManagerBasedRLEnv,        
         sensor_cfg: SceneEntityCfg,
         resize: tuple(int,int), 
-        buffer_len: int
+        buffer_len: int,
+        debug_vis:bool
         ):
-        self.global_counter += 1
-        if self.global_counter % 5 == 0:
-            depth_images = self.camera_sensor.data.output["distance_to_image_plane"].squeeze(-1)
+        if env.common_step_counter % 5 == 0:
+            depth_images = self.camera_sensor.data.output["distance_to_camera"].squeeze(-1)
             for env_id, depth_image in enumerate(depth_images):
                 processed_image = self._process_depth_image(depth_image)
                 self.depth_buffer[env_id] = torch.cat([self.depth_buffer[env_id, 1:], 
                                                     processed_image.to(self.device).unsqueeze(0)], dim=0)
+        if self.debug_vis:
+            depth_images_np = self.depth_buffer[:, -2].detach().cpu().numpy()
+            depth_images_norm = []
+            for img in depth_images_np:
+                depth_images_norm.append(img)
+            rows = []
+            ncols = 4
+            for i in range(0, len(depth_images_norm), ncols):
+                row = np.hstack(depth_images_norm[i:i+ncols])  
+                rows.append(row)
+
+            grid_img = np.vstack(rows)   
+            cv2.imshow("depth_images_grid", grid_img)
+            cv2.waitKey(1)
         return self.depth_buffer[:, -2].to(env.device)
 
     def _process_depth_image(self, depth_image):
@@ -200,14 +205,13 @@ class image_features(ManagerTermBase):
 
     def _normalize_depth_image(self, depth_image):
         depth_image = depth_image  # make similiar to scandot 
-        depth_image = (depth_image - 0.1) / (self.clipping_range - 0.1)  - 0.5
+        depth_image = (depth_image) / (self.clipping_range)  - 0.5
         return depth_image
     
 class obervation_delta_yaw_ok(ManagerTermBase):
 
     def __init__(self, cfg: ObservationTermCfg, env: ParkourManagerBasedRLEnv):
         super().__init__(cfg, env)
-        self.global_counter = 0 
         self.delta_yaw = torch.zeros(self.num_envs, device=self.device)
 
     def __call__(
@@ -217,17 +221,9 @@ class obervation_delta_yaw_ok(ManagerTermBase):
         threshold: float,
         asset_cfg: SceneEntityCfg = SceneEntityCfg("robot"),
     ):
-        self.global_counter += 1
-        if self.global_counter % 5 == 0:
+        if env.common_step_counter % 5 == 0:
             parkour_event: ParkourEvent =  env.parkour_manager.get_term(parkour_name)
             asset: Articulation = env.scene[asset_cfg.name]
-            robot_root_pos_w = asset.data.root_pos_w[:, :2] - parkour_event.env_origins[:, :2]
-            target_pos_rel = parkour_event.cur_goals[:, :2] - robot_root_pos_w
-            norm = torch.norm(target_pos_rel, dim=-1, keepdim=True)
-            target_vec_norm = target_pos_rel / (norm + 1e-5)
-            q = asset.data.root_state_w[:, 3:7]
-            target_yaw = torch.atan2(target_vec_norm[:, 1], target_vec_norm[:, 0])
-            yaw = torch.atan2(2*(q[:,0]*q[:,3] + q[:,1]*q[:,2]),
-                                    1 - 2*(q[:,2]**2 + q[:,3]**2))
-            self.delta_yaw = target_yaw - yaw
+            _, _, yaw = euler_xyz_from_quat(asset.data.root_quat_w)
+            self.delta_yaw = parkour_event.target_yaw - wrap_to_pi(yaw)
         return self.delta_yaw < threshold
