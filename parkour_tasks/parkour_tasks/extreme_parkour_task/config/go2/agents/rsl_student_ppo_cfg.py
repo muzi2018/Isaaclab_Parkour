@@ -12,7 +12,7 @@ from isaaclab.utils import configclass
 @configclass
 class UnitreeGo2ParkourStudentPPORunnerCfg(ParkourRslRlOnPolicyRunnerCfg):
     num_steps_per_env = 24 
-    max_iterations = 50000 * 4
+    max_iterations = 50000 
     save_interval = 100
     experiment_name = "unitree_go2_parkour"
     empirical_normalization = False
@@ -35,8 +35,8 @@ class UnitreeGo2ParkourStudentPPORunnerCfg(ParkourRslRlOnPolicyRunnerCfg):
     )
     depth_encoder = ParkourRslRlDepthEncoderCfg(
         hidden_dims = 512,
-        learning_rate= 5e-4,
-        num_steps_per_env = 24*3
+        learning_rate= 1e-3,
+        num_steps_per_env = 24*5
     )
 
     algorithm = ParkourRslRlDistillationAlgorithmCfg(
