@@ -24,12 +24,11 @@ class DelayedJointPositionAction(JointPositionAction):
         # use default joint positions as offset
         if cfg.use_default_offset:
             self._offset = self._asset.data.default_joint_pos[:, self._joint_ids].clone()
-      
         self._action_history_buf = torch.zeros(self.num_envs, cfg.history_length, self._num_joints, device=self.device, dtype=torch.float)
-        self._global_counter = 0 
         self._delay_update_global_steps = cfg.delay_update_global_steps
         self._action_delay_steps = cfg.action_delay_steps
         self._use_delay = cfg.use_delay
+        self.env = env 
 
     def apply_actions(self):
         # set position targets
@@ -37,7 +36,7 @@ class DelayedJointPositionAction(JointPositionAction):
 
     def process_actions(self, actions: torch.Tensor):
         # store the raw actions
-        if self._global_counter % self._delay_update_global_steps == 0:
+        if self.env.common_step_counter % self._delay_update_global_steps == 0:
             if len(self._action_delay_steps) != 0:
                 self.delay = torch.tensor(self._action_delay_steps.pop(0), device=self.device, dtype=torch.float)
         self._action_history_buf = torch.cat([self._action_history_buf[:, 1:].clone(), actions[:, None, :].clone()], dim=1)
@@ -46,7 +45,6 @@ class DelayedJointPositionAction(JointPositionAction):
             self._raw_actions[:] = self._action_history_buf[:, indices.long()]
         else:
             self._raw_actions[:] = actions
-        self._global_counter += 1 
         # apply the affine transformations
 
         if self.cfg.clip is not None:
