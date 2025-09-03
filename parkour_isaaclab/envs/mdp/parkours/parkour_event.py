@@ -75,6 +75,17 @@ class ParkourEvent(ParkourTerm):
         self.env_per_terrain_name = self.total_terrain_names[numpy_terrain_levels, numpy_terrain_types]
         self._reset_offset = self.env.event_manager.get_term_cfg('reset_root_state').params['offset']
 
+        robot_root_pos_w = self.robot.data.root_pos_w[:, :2] - self.env_origins[:, :2]
+        self.target_pos_rel = self.cur_goals[:, :2] - robot_root_pos_w
+        self.next_target_pos_rel = self.next_goals[:, :2] - robot_root_pos_w
+        norm = torch.norm(self.target_pos_rel, dim=-1, keepdim=True)
+        target_vec_norm = self.target_pos_rel / (norm + 1e-5)
+        self.target_yaw = torch.atan2(target_vec_norm[:, 1], target_vec_norm[:, 0])
+        norm = torch.norm(self.next_target_pos_rel, dim=-1, keepdim=True)
+        target_vec_norm = self.next_target_pos_rel / (norm + 1e-5)
+        self.next_target_yaw = torch.atan2(target_vec_norm[:, 1], target_vec_norm[:, 0])
+
+
     def __call__(self):
         self.cur_goals = self._gather_cur_goals()
         self.next_goals = self._gather_cur_goals(future=1)
