@@ -34,7 +34,6 @@ class ParkourManagerBasedRLEnv(ParkourManagerBasedEnv, gym.Env):
         self.render_mode = render_mode
 
         # -- init buffers
-        self.episode_length_buf = torch.zeros(self.num_envs, device=self.device, dtype=torch.long)
         # -- set the framerate of the gym video recorder wrapper so that the playback speed of the produced video matches the simulation
         self.metadata["render_fps"] = 1 / self.step_dt
         print("[INFO]: Completed setting up the environment...")
@@ -42,7 +41,10 @@ class ParkourManagerBasedRLEnv(ParkourManagerBasedEnv, gym.Env):
     def load_managers(self):
         # note: this order is important since observation manager needs to know the command and action managers
         # and the reward manager needs to know the termination manager
+        self.episode_length_buf = torch.zeros(self.num_envs, device=self.device, dtype=torch.long)
+        
         # -- command manager
+
         self.command_manager: CommandManager = CommandManager(self.cfg.commands, self)
         print("[INFO] Command Manager: ", self.command_manager)
 
