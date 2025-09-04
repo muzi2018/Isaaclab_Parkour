@@ -31,7 +31,6 @@ class ParkourTeacherSceneCfg(ParkourDefaultSceneCfg):
         
 @configclass
 class UnitreeGo2TeacherParkourEnvCfg(ParkourManagerBasedRLEnvCfg):
-    viewer = VIEWER 
     scene: ParkourTeacherSceneCfg = ParkourTeacherSceneCfg(num_envs=6144, env_spacing=1.)
     # Basic settings
     observations: TeacherObservationsCfg = TeacherObservationsCfg()
@@ -62,33 +61,57 @@ class UnitreeGo2TeacherParkourEnvCfg(ParkourManagerBasedRLEnvCfg):
         self.events.random_camera_position = None
 
 @configclass
-class UnitreeGo2TeacherParkourEnvCfg_PLAY(UnitreeGo2TeacherParkourEnvCfg):
+class UnitreeGo2TeacherParkourEnvCfg_EVAL(UnitreeGo2TeacherParkourEnvCfg):
+    viewer = VIEWER 
+
     def __post_init__(self):
         # post init of parent
         super().__post_init__()
+        self.scene.num_envs = 256
+        self.episode_length_s = 20.
+        self.parkours.base_parkour.debug_vis = True
+        self.commands.base_velocity.debug_vis = True
+        self.scene.terrain.max_init_terrain_level = None
+        # spawn the robot randomly in the grid (instead of their terrain levels)
+        if self.scene.terrain.terrain_generator is not None:
+            self.scene.terrain.terrain_generator.num_rows = 5
+            self.scene.terrain.terrain_generator.num_cols = 5
+            self.scene.terrain.terrain_generator.random_difficulty = False
+            self.scene.terrain.terrain_generator.difficulty_range = (0.7,1.0)
+            self.scene.terrain.terrain_generator.curriculum = False
+        self.events.randomize_rigid_body_com = None
+        self.events.randomize_rigid_body_mass = None
+        self.events.push_by_setting_velocity.interval_range_s = (6.,6.)
+        self.commands.base_velocity.resampling_time_range = (60.,60.)
+        for key, sub_terrain in self.scene.terrain.terrain_generator.sub_terrains.items():
+            if key ==['parkour','parkour_hurdle','parkour_step','parkour_gap']:
+                sub_terrain.noise_range = (0.02, 0.02)
+                sub_terrain.proportion = 0.25
+                
+@configclass
+class UnitreeGo2TeacherParkourEnvCfg_PLAY(UnitreeGo2TeacherParkourEnvCfg_EVAL):
+    viewer = VIEWER 
+
+    def __post_init__(self):
+        # post init of parent
+        super().__post_init__()
+        self.episode_length_s = 60.
+        self.scene.num_envs = 16
 
         # make a smaller scene for play
         self.parkours.base_parkour.debug_vis = True
         self.commands.base_velocity.debug_vis = True
-
-        self.scene.num_envs = 16
         # spawn the robot randomly in the grid (instead of their terrain levels)
-        # self.scene.terrain.max_init_terrain_level = None
         if self.scene.terrain.terrain_generator is not None:
-            self.scene.terrain.terrain_generator.num_rows = 5
-            self.scene.terrain.terrain_generator.num_cols = 5
             self.scene.terrain.terrain_generator.random_difficulty = True
-            self.scene.terrain.terrain_generator.difficulty_range = (0.0,0.3)
+            self.scene.terrain.terrain_generator.difficulty_range = (0.7,1.0)
             self.scene.terrain.terrain_generator.curriculum = False
-        self.observations.policy.enable_corruption = False
-        self.events.randomize_rigid_body_com = None
-        self.events.randomize_rigid_body_mass = None
-        self.commands.base_velocity.resampling_time_range = (60.,60.)
-        self.episode_length_s = 60.
-
+        self.events.push_by_setting_velocity = None
         for key, sub_terrain in self.scene.terrain.terrain_generator.sub_terrains.items():
             if key =='parkour_flat':
                 sub_terrain.proportion = 0.0
             else:
                 sub_terrain.proportion = 0.2
                 sub_terrain.noise_range = (0.02, 0.02)
+
+
