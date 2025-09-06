@@ -120,9 +120,9 @@ press 1: Not use free camera (default)
 
 it is a future work, i will open this repo as soon as possible
 
-sim2sim: isaaclab to mujoco
+* [x] sim2sim: isaaclab to mujoco
 
-sim2real: isaaclab to real world
+* [ ] sim2real: isaaclab to real world
 
 see this [repo](https://github.com/CAI23sbP/go2_parkour_deploy)
 
