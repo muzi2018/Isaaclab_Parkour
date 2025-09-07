@@ -39,12 +39,6 @@ python scripts/rsl_rl/train.py --task Isaac-Extreme-Parkour-Teacher-Unitree-Go2-
 python scripts/rsl_rl/train.py --task Isaac-Extreme-Parkour-Student-Unitree-Go2-v0 --seed 1 --headless
 ```
 
-### 1.3. Training Student Policy by Multi-GPU
-
-```
-python -m torch.distributed.run --nnodes=1 --nproc_per_node=3 scripts/rsl_rl/train.py --task=Isaac-Extreme-Parkour-Student-Unitree-Go2-v0 --headless --distributed
-```
-
 ## How to play your policy 
 
 ### 2.1. Pretrained Teacher Policy 
@@ -86,18 +80,18 @@ https://github.com/user-attachments/assets/82a5cecb-ffbf-4a46-8504-79188a147c40
 python scripts/rsl_rl/evaluation.py --task Isaac-Extreme-Parkour-Student-Unitree-Go2-Eval-v0 
 ```
 
-## How to play deploy in IsaacLab
+## How to deploy in IsaacLab
 
 [Screencast from 2025년 08월 20일 18시 55분 01초.webm](https://github.com/user-attachments/assets/4fb1ba4b-1780-49b0-a739-bff0b95d9b66)
 
-### 3.1. Playing Teacher Policy 
+### 4.1. Deployment Teacher Policy 
 
 ```
 python scripts/rsl_rl/demo.py --task Isaac-Extreme-Parkour-Teacher-Unitree-Go2-Play-v0 
 ```
 
 
-### 3.2. Playing Student Policy 
+### 4.2. Deployment Student Policy 
 
 ```
 python scripts/rsl_rl/demo.py --task Isaac-Extreme-Parkour-Student-Unitree-Go2-Play-v0 
