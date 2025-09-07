@@ -61,9 +61,15 @@ python scripts/rsl_rl/play.py --task Isaac-Extreme-Parkour-Teacher-Unitree-Go2-P
 [Screencast from 2025년 08월 16일 12시 43분 38초.webm](https://github.com/user-attachments/assets/ff1f58db-2439-449c-b596-5a047c526f1f)
 
 
+### 2.3. Evaluation Teacher Policy
+
+```
+python scripts/rsl_rl/evaluation.py --task Isaac-Extreme-Parkour-Teacher-Unitree-Go2-Eval-v0 
+```
+
 ### 3.1 Pretrained Student Policy 
 
-Download Student Policy by this [link]()
+Download Student Policy by this [link](https://drive.google.com/file/d/1qter_3JZgbBcpUnTmTrexKnle7sUpDVe/view?usp=sharing)
 
 ### 3.2. Playing Student Policy 
 
@@ -73,6 +79,12 @@ python scripts/rsl_rl/play.py --task Isaac-Extreme-Parkour-Student-Unitree-Go2-P
 
 https://github.com/user-attachments/assets/82a5cecb-ffbf-4a46-8504-79188a147c40
 
+
+### 3.3. Evaluation Student Policy
+
+```
+python scripts/rsl_rl/evaluation.py --task Isaac-Extreme-Parkour-Student-Unitree-Go2-Eval-v0 
+```
 
 ## How to play deploy in IsaacLab
 
