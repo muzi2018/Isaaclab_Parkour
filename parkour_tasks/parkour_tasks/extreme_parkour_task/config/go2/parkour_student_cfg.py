@@ -83,7 +83,6 @@ class UnitreeGo2StudentParkourEnvCfg_EVAL(UnitreeGo2StudentParkourEnvCfg):
         self.scene.terrain.max_init_terrain_level = None
 
         self.observations.depth_camera.depth_cam.params['debug_vis'] = True
-        self.observations.depth_camera.depth_cam.params['debug_vis'] = True
 
         self.commands.base_velocity.resampling_time_range = (60.,60.)
         self.commands.base_velocity.debug_vis = True
@@ -91,23 +90,22 @@ class UnitreeGo2StudentParkourEnvCfg_EVAL(UnitreeGo2StudentParkourEnvCfg):
         if self.scene.terrain.terrain_generator is not None:
             self.scene.terrain.terrain_generator.num_rows = 5
             self.scene.terrain.terrain_generator.num_cols = 5
-            self.scene.terrain.terrain_generator.difficulty_range = (0.7,1.0)
-            self.scene.terrain.terrain_generator.curriculum = False
+            self.scene.terrain.terrain_generator.random_difficulty = True
+            self.scene.terrain.terrain_generator.difficulty_range = (0.0,1.0)
         self.events.randomize_rigid_body_com = None
         self.events.randomize_rigid_body_mass = None
         self.events.push_by_setting_velocity.interval_range_s = (6.,6.)
         self.events.random_camera_position.params['rot_noise_range'] = {'pitch':(0, 1)}
         
         for key, sub_terrain in self.scene.terrain.terrain_generator.sub_terrains.items():
-            if key =='parkour_flat':
+            if key in ['parkour_flat', 'parkour_demo']:
                 sub_terrain.proportion = 0.0
             else:
                 sub_terrain.proportion = 0.25
                 sub_terrain.noise_range = (0.02, 0.02)
 
 @configclass
-class UnitreeGo2StudentParkourEnvCfg_PLAY(UnitreeGo2StudentParkourEnvCfg):
-    viewer = VIEWER 
+class UnitreeGo2StudentParkourEnvCfg_PLAY(UnitreeGo2StudentParkourEnvCfg_EVAL):
 
     def __post_init__(self):
         # post init of parent
@@ -117,9 +115,7 @@ class UnitreeGo2StudentParkourEnvCfg_PLAY(UnitreeGo2StudentParkourEnvCfg):
         self.episode_length_s = 60.
 
         if self.scene.terrain.terrain_generator is not None:
-            # self.scene.terrain.terrain_generator.random_difficulty = True
             self.scene.terrain.terrain_generator.difficulty_range = (0.7,1.0)
-            self.scene.terrain.terrain_generator.curriculum = False
         self.events.push_by_setting_velocity = None
         for key, sub_terrain in self.scene.terrain.terrain_generator.sub_terrains.items():
             if key =='parkour_flat':
