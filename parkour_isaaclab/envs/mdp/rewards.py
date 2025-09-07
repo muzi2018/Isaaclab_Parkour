@@ -53,8 +53,8 @@ class reward_feet_edge(ManagerTermBase):
         contact = torch.norm(contact_forces, dim=-1) > 2.
         last_contacts = torch.norm(previous_contact_forces, dim=-1) > 2.
         contact_filt = torch.logical_or(contact, last_contacts) 
-        feet_at_edge = contact_filt & feet_at_edge
-        rew = (self.parkour_event.terrain.terrain_levels > 3) * torch.sum(feet_at_edge, dim=-1)
+        self.feet_at_edge = contact_filt & feet_at_edge
+        rew = (self.parkour_event.terrain.terrain_levels > 3) * torch.sum(self.feet_at_edge, dim=-1)
         ## This is for debugging to matching index and x_edge_mask
         # origin = self.x_edge_masks_tensor.detach().cpu().numpy().astype(np.uint8) * 255
         # cv2.imshow('origin',origin)
