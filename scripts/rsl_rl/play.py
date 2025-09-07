@@ -169,19 +169,20 @@ def main():
         if agent_cfg.algorithm.class_name != "DistillationWithExtractor":
             with torch.inference_mode():
                 # agent stepping
-                priv_states_estimated = estimator.inference(obs[:, :num_prop])
-                obs[:, num_prop+num_scan:num_prop+num_scan+num_priv_explicit] = priv_states_estimated
+                obs[:, num_prop+num_scan:num_prop+num_scan+num_priv_explicit] = estimator.inference(obs[:, :num_prop])
                 actions = policy(obs, hist_encoding = True)
             # env stepping
         else:
             depth_camera = extras["observations"]['depth_camera'].to(env.device)
             with torch.inference_mode():
-                obs_student = obs[:, :num_prop].clone()
-                obs_student[:, 6:8] = 0
-                depth_latent_and_yaw = depth_encoder(depth_camera, obs_student)
-                depth_latent = depth_latent_and_yaw[:, :-2]
-                yaw = depth_latent_and_yaw[:, -2:]
+                if env.unwrapped.common_step_counter %5 == 0:
+                    obs_student = obs[:, :num_prop].clone()
+                    obs_student[:, 6:8] = 0
+                    depth_latent_and_yaw = depth_encoder(depth_camera, obs_student)
+                    depth_latent = depth_latent_and_yaw[:, :-2]
+                    yaw = depth_latent_and_yaw[:, -2:]
                 obs[:, 6:8] = 1.5*yaw
+                # obs[:, num_prop+num_scan:num_prop+num_scan+num_priv_explicit] = estimator.inference(obs[:, :num_prop])
                 actions = policy(obs, hist_encoding=True, scandots_latent=depth_latent)
         obs, _, _, extras = env.step(actions)
         if args_cli.video:
