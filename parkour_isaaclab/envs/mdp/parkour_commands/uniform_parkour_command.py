@@ -67,7 +67,7 @@ class UniformParkourCommand(CommandTerm):
             
     def _update_command(self):
         heading_error = math_utils.wrap_to_pi(self.heading_target  - \
-                                            self.robot.data.heading_w) * self.cfg.heading_control_stiffness
+                                            self.robot.data.heading_w) * self.cfg.heading_control_stiffness # 将角度差限制在 [-π, π]，保证旋转是最短路径
         self.vel_command_b[:, 2] = torch.clip(heading_error,
                     min= -1,
                     max= 1,

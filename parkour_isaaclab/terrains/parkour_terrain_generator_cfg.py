@@ -7,7 +7,7 @@ from isaaclab.terrains.height_field import HfTerrainBaseCfg
 
 @configclass
 class ParkourSubTerrainBaseCfg(HfTerrainBaseCfg):
-    border_width: float = 0.0
+    border_width: float = 0.0 # 
     horizontal_scale: float = 0.05
     """The discretization of the terrain along the x and y axes (in m). Defaults to 0.1."""
     vertical_scale: float = 0.005
@@ -23,3 +23,5 @@ class ParkourTerrainGeneratorCfg(TerrainGeneratorCfg):
     num_goals: int = 8 
     terrain_names: list[str] = [] 
     random_difficulty: bool = False 
+    
+

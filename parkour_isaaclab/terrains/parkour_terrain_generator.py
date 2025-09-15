@@ -9,14 +9,14 @@ from .parkour_terrain_generator_cfg import ParkourTerrainGeneratorCfg, ParkourSu
 class ParkourTerrainGenerator(TerrainGenerator):
     def __init__(self, cfg: ParkourTerrainGeneratorCfg, device: str = "cpu"):
         self.num_goals = cfg.num_goals 
-        self.terrain_type = np.zeros((cfg.num_rows, cfg.num_cols))
+        self.terrain_type = np.zeros((cfg.num_rows, cfg.num_cols)) # If num_rows = 1 and num_cols = 3 → you get a 1×3 grid of terrains.
         self.goals = np.zeros((cfg.num_rows, cfg.num_cols, self.num_goals, 3))
         self.terrain_names = np.zeros((cfg.num_rows, cfg.num_cols, 1)).astype(str) 
         width_pixels = int(cfg.size[0] / cfg.horizontal_scale) + 1
-        length_pixels = int(cfg.size[1] / cfg.horizontal_scale) + 1
+        length_pixels = int(cfg.size[1] / cfg.horizontal_scale) + 1 # The width (along x) and length (along y) of each sub-terrain (in m).
         self.total_width_pixels = width_pixels * cfg.num_rows
         self.total_length_pixels = length_pixels * cfg.num_cols
-        self.goal_heights = np.zeros((cfg.num_rows, cfg.num_cols, self.num_goals), dtype=np.int16)
+        self.goal_heights = np.zeros((cfg.num_rows, cfg.num_cols, self.num_goals), dtype=np.int16) 
         self.x_edge_maskes = np.zeros((cfg.num_rows, cfg.num_cols, width_pixels, length_pixels), dtype=np.int16)
 
         super().__init__(cfg=cfg, device=device)
@@ -26,7 +26,7 @@ class ParkourTerrainGenerator(TerrainGenerator):
         """Add terrains based on randomly sampled difficulty parameter."""
         # normalize the proportions of the sub-terrains
         proportions = np.array([sub_cfg.proportion for sub_cfg in self.cfg.sub_terrains.values()])
-        proportions /= np.sum(proportions)
+        proportions /= np.sum(proportions) # the generator will pick the proportions with probability
         # create a list of all terrain configs
         sub_terrains_cfgs = list(self.cfg.sub_terrains.values())
         sub_terrains_names = list(self.cfg.sub_terrains.keys())
@@ -58,7 +58,7 @@ class ParkourTerrainGenerator(TerrainGenerator):
         sub_indices = []
         for index in range(self.cfg.num_cols):
             sub_index = np.min(np.where(index / self.cfg.num_cols + 0.001 < np.cumsum(proportions))[0])
-            sub_indices.append(sub_index)
+            sub_indices.append(sub_index) # difficulty increases along the columns
         sub_indices = np.array(sub_indices, dtype=np.int32)
         # create a list of all terrain configs
         sub_terrains_cfgs = list(self.cfg.sub_terrains.values())
@@ -78,9 +78,9 @@ class ParkourTerrainGenerator(TerrainGenerator):
                 sub_terrains_name = sub_terrains_names[sub_indices[sub_col]]
                 mesh, origin, sub_terrain_goal, goal_heights, x_edge_mask = self._get_terrain_mesh(difficulty, sub_terrains_cfg)
                 # add to sub-terrains
-                self.terrain_type[sub_row, sub_col] = sub_indices[sub_col]
-                self.terrain_names[sub_row, sub_col] = sub_terrains_name
-                self._add_sub_terrain(mesh, origin, sub_row, sub_col, sub_terrain_goal)
+                self.terrain_type[sub_row, sub_col] = sub_indices[sub_col] # all of rows have the same terrain type
+                self.terrain_names[sub_row, sub_col] = sub_terrains_name # all of rows have the same terrain name
+                self._add_sub_terrain(mesh, origin, sub_row, sub_col, sub_terrain_goal) 
                 self.goal_heights[sub_row, sub_col, :] = goal_heights
                 self.x_edge_maskes[sub_row, sub_col,: ,:] = x_edge_mask
 

@@ -20,7 +20,7 @@ RslRlPpoAlgorithmCfg,
 #########################
 
 @configclass
-class ParkourRslRlBaseCfg:
+class ParkourRslRlBaseCfg: # the dimensions of all the robot’s inputs
     num_priv_explicit: int = 3 + 3 + 3 # 9
     num_priv_latent: int = 4 + 1 + 12 +12 # 29
     num_prop: int = 3 + 2 + 3 + 4 + 36 + 5 # 53
