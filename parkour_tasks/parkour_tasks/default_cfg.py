@@ -85,7 +85,8 @@ class ParkourDefaultSceneCfg(InteractiveSceneCfg):
         )
 
 ## we are now using a raycaster based camera, not a pinhole camera. see tail issue https://github.com/isaac-sim/IsaacLab/issues/719
-CAMERA_CFG = RayCasterCameraCfg( 
+## how it works
+CAMERA_CFG = RayCasterCameraCfg(
     prim_path= '{ENV_REGEX_NS}/Robot/base',
     data_types=["distance_to_camera"],
     offset=RayCasterCameraCfg.OffsetCfg(
@@ -104,7 +105,7 @@ CAMERA_CFG = RayCasterCameraCfg(
     mesh_prim_paths=["/World/ground"],
     max_distance = 2.,
 )
-
+## how it looks like in usd
 CAMERA_USD_CFG = AssetBaseCfg(
     prim_path="{ENV_REGEX_NS}/Robot/base/d435",
     spawn=sim_utils.UsdFileCfg(usd_path=os.path.join(agents.__path__[0],'d435.usd')),
