@@ -19,7 +19,7 @@ Parkour Manager is dealing with goal heading position
 It is similar to a CommandMangner which is a handling Position Command
 """
 
-class ParkourTerm(CommandTerm):
+class ParkourTerm(CommandTerm): 
     def __init__(self, cfg: ParkourTermCfg, env: ParkourManagerBasedRLEnv):
         super().__init__(cfg, env) 
 
