@@ -151,6 +151,14 @@ def main(env_cfg: ParkourManagerBasedRLEnv |ManagerBasedRLEnvCfg | DirectRLEnvCf
     
     # save resume path before creating a new log_dir
     if agent_cfg.resume or agent_cfg.algorithm.class_name == "DistillationWithExtractor":
+        if not os.path.exists(log_root_path):
+            print(f"{log_root_path} does not exist, creating...")
+            os.makedirs(log_root_path, exist_ok=True)
+
+        print("log_root_path = ", log_root_path)
+        print("load_run = ", agent_cfg.load_run)
+        print("load_checkpoint = ", agent_cfg.load_checkpoint)
+        
         resume_path = get_checkpoint_path(log_root_path, agent_cfg.load_run, agent_cfg.load_checkpoint)
 
     # # wrap for video recording

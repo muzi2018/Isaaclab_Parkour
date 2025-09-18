@@ -177,7 +177,6 @@ https://github.com/CAI23sbP/Isaaclab_Parkour
 sbp0783@hanyang.ac.kr
 ```
 
-
 # Experiment Parameter
 
 experiment_name = "unitree_go2_parkour" : Isaaclab_Parkour/parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/agents/rsl_student_ppo_cfg.py UnitreeGo2ParkourStudentPPORunnerCfg
