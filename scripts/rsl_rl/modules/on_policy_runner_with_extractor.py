@@ -330,6 +330,7 @@ class OnPolicyRunnerWithExtractor(OnPolicyRunner):
         obs, extras = self.env.get_observations()
         additional_obs = {}
         additional_obs["delta_yaw_ok"] = extras['observations']['delta_yaw_ok'].to(self.device)
+        print("additional_obs[\"delta_yaw_ok\"] = ", additional_obs["delta_yaw_ok"].shape) # additional_obs["delta_yaw_ok"] =  torch.Size([192, 1])
         additional_obs["depth_camera"] = extras["observations"]['depth_camera'].to(self.device)
         obs = obs.to(self.device)
 
@@ -357,15 +358,31 @@ class OnPolicyRunnerWithExtractor(OnPolicyRunner):
             for _ in range(self.depth_encoder_cfg['num_steps_per_env']):
                 if self.env.unwrapped.common_step_counter %5 == 0:
                     obs_prop_depth = obs[:, :self.depth_encoder_cfg['num_prop']].clone()
+                    # print("obs shape = ", obs.shape) # obs shape =  torch.Size([192, 753])
                     obs_prop_depth[:, 6:8] = 0
                     depth_latent_and_yaw = self.alg.depth_encoder(additional_obs["depth_camera"].clone(), obs_prop_depth)  # clone is crucial to avoid in-place operation
                     depth_latent = depth_latent_and_yaw[:, :-2]
                     yaw = 1.5*depth_latent_and_yaw[:, -2:]
                     yaws_buffer.append(obs[:,6:8].detach() - yaw)
+                    # print("yaw shape = ", yaw.shape) # yaw shape =  torch.Size([192, 2])
                 with torch.no_grad():
                     actions_teacher = self.alg.policy.act_inference(obs, hist_encoding=True, scandots_latent=None)
                     delta_yaw_ok_buffer.append(torch.nonzero(additional_obs["delta_yaw_ok"]).size(0) / additional_obs["delta_yaw_ok"].numel())
-                obs[additional_obs["delta_yaw_ok"], 6:8] = yaw.detach()[additional_obs["delta_yaw_ok"]]
+                
+                ###  Correct  ###
+                # mask = additional_obs["delta_yaw_ok"].squeeze(-1)
+                # obs_yaw_test = obs[mask, 6:8]
+                # print("obs_yaw_test shape = ", obs_yaw_test.shape) # obs_yaw_test shape =  torch.Size([98, 2])
+                #################
+                
+                ###  Correct  ###
+                # yaw_test = yaw.detach()[mask]
+                # print("yaw_test shape = ", yaw_test.shape) # obs_yaw shape =  torch.Size([98, 2])
+                #################
+                # obs_yaw_test = obs_yaw_test
+                # print("ok_pass .........")
+                
+                obs[additional_obs["delta_yaw_ok"].squeeze(-1), 6:8] = yaw.detach()[additional_obs["delta_yaw_ok"].squeeze(-1)] 
                 actions_student = self.alg.depth_actor(obs, hist_encoding=True, scandots_latent=depth_latent)
                 actions_buffer.append(actions_teacher.detach() - actions_student)
                 
