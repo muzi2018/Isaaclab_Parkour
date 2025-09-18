@@ -155,9 +155,9 @@ def main(env_cfg: ParkourManagerBasedRLEnv |ManagerBasedRLEnvCfg | DirectRLEnvCf
             print(f"{log_root_path} does not exist, creating...")
             os.makedirs(log_root_path, exist_ok=True)
 
-        print("log_root_path = ", log_root_path)
-        print("load_run = ", agent_cfg.load_run)
-        print("load_checkpoint = ", agent_cfg.load_checkpoint)
+        # print("log_root_path = ", log_root_path)
+        # print("load_run = ", agent_cfg.load_run)
+        # print("load_checkpoint = ", agent_cfg.load_checkpoint)
         
         resume_path = get_checkpoint_path(log_root_path, agent_cfg.load_run, agent_cfg.load_checkpoint)
 

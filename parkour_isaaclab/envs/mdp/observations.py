@@ -226,6 +226,6 @@ class obervation_delta_yaw_ok(ManagerTermBase):
             asset: Articulation = env.scene[asset_cfg.name]
             _, _, yaw = euler_xyz_from_quat(asset.data.root_quat_w)
             self.delta_yaw = parkour_event.target_yaw - wrap_to_pi(yaw)
-            buf = (self.delta_yaw < threshold).unsqueeze(-1)
-            print("buf.shape = ", buf.shape) # torch.Size([192])
+            # buf = (self.delta_yaw < threshold).unsqueeze(-1)
+            # print("buf.shape = ", buf.shape) # torch.Size([192])
         return (self.delta_yaw < threshold).unsqueeze(-1)
