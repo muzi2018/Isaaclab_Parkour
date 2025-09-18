@@ -85,12 +85,13 @@ class StudentObservationsCfg:
             "sensor_cfg":SceneEntityCfg("depth_camera"),
             "resize": (58, 87),
             "buffer_len": 2,
+            "debug_vis": False
             },
         )
 
     @configclass
     class DeltaYawOkPolicyCfg(ObsGroup):
-        deta_yaw_ok =  ObsTerm(
+        delta_yaw_ok =  ObsTerm(
             func=observations.obervation_delta_yaw_ok,
             params={            
             "parkour_name":'base_parkour',
