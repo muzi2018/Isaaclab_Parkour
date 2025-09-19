@@ -330,7 +330,7 @@ class OnPolicyRunnerWithExtractor(OnPolicyRunner):
         obs, extras = self.env.get_observations()
         additional_obs = {}
         additional_obs["delta_yaw_ok"] = extras['observations']['delta_yaw_ok'].to(self.device)
-        print("additional_obs[\"delta_yaw_ok\"] = ", additional_obs["delta_yaw_ok"].shape) # additional_obs["delta_yaw_ok"] =  torch.Size([192, 1])
+        # print("additional_obs[\"delta_yaw_ok\"] = ", additional_obs["delta_yaw_ok"].shape) # additional_obs["delta_yaw_ok"] =  torch.Size([192, 1])
         additional_obs["depth_camera"] = extras["observations"]['depth_camera'].to(self.device)
         obs = obs.to(self.device)
 
