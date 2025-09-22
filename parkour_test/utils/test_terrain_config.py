@@ -16,13 +16,13 @@ PARKOUR_TERRAINS_CFG = ParkourTerrainGeneratorCfg(
     curriculum= True,
     sub_terrains={
 
-        "parkour_gap": ExtremeParkourGapTerrainCfg(
-                        proportion=0.2,
-                        apply_roughness=True,
-                        x_range = (0.8, 1.5),
-                        y_range = (-0.1, 0.1),
-                        half_valid_width = (0.6, 1.2),
-                        )
+        # "parkour_gap": ExtremeParkourGapTerrainCfg(
+        #                 proportion=0.2,
+        #                 apply_roughness=True,
+        #                 x_range = (0.8, 1.5),
+        #                 y_range = (-0.1, 0.1),
+        #                 half_valid_width = (0.6, 1.2),
+        #                 )
         # "parkour_hurdle": ExtremeParkourHurdleTerrainCfg(
         #                 proportion=0.2,
         #                 apply_roughness=True,
