@@ -67,6 +67,8 @@ if args_cli.distributed and version.parse(installed_version) < version.parse(RSL
     )
     exit(1)
 
+print(args_cli)
+
 """Rest everything follows."""
 
 import gymnasium as gym
