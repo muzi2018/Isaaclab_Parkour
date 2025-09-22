@@ -1,0 +1,909 @@
+--- git status ---
+On branch master
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+	modified:   README.md
+	modified:   parkour_isaaclab/envs/__pycache__/parkour_manager_based_env.cpython-310.pyc
+	modified:   parkour_isaaclab/envs/__pycache__/parkour_manager_based_rl_env.cpython-310.pyc
+	modified:   parkour_isaaclab/envs/mdp/__pycache__/events.cpython-310.pyc
+	modified:   parkour_isaaclab/envs/mdp/__pycache__/observations.cpython-310.pyc
+	modified:   parkour_isaaclab/envs/mdp/observations.py
+	modified:   parkour_isaaclab/envs/mdp/parkour_actions/__pycache__/joint_actions.cpython-310.pyc
+	modified:   parkour_isaaclab/envs/mdp/parkour_actions/joint_actions.py
+	modified:   parkour_isaaclab/envs/mdp/parkour_commands/__pycache__/uniform_parkour_command.cpython-310.pyc
+	modified:   parkour_isaaclab/envs/mdp/parkour_commands/uniform_parkour_command.py
+	modified:   parkour_isaaclab/envs/mdp/parkours/__pycache__/parkour_event.cpython-310.pyc
+	modified:   parkour_isaaclab/envs/mdp/parkours/parkour_event.py
+	modified:   parkour_isaaclab/envs/parkour_manager_based_rl_env.py
+	modified:   parkour_tasks/parkour_tasks/__pycache__/default_cfg.cpython-310.pyc
+	modified:   parkour_tasks/parkour_tasks/default_cfg.py
+	modified:   parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/__pycache__/parkour_mdp_cfg.cpython-310.pyc
+	modified:   parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/__pycache__/parkour_student_cfg.cpython-310.pyc
+	modified:   parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/__pycache__/parkour_teacher_cfg.cpython-310.pyc
+	modified:   parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/agents/__pycache__/parkour_rl_cfg.cpython-310.pyc
+	modified:   parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/agents/__pycache__/rsl_student_ppo_cfg.cpython-310.pyc
+	modified:   parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/agents/parkour_rl_cfg.py
+	modified:   parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/agents/rsl_student_ppo_cfg.py
+	modified:   parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/parkour_mdp_cfg.py
+	modified:   parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/parkour_student_cfg.py
+	modified:   parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/parkour_teacher_cfg.py
+	modified:   scripts/rsl_rl/__pycache__/vecenv_wrapper.cpython-310.pyc
+	modified:   scripts/rsl_rl/demo.py
+	modified:   scripts/rsl_rl/modules/__pycache__/on_policy_runner_with_extractor.cpython-310.pyc
+	modified:   scripts/rsl_rl/modules/on_policy_runner_with_extractor.py
+	modified:   scripts/rsl_rl/play.py
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   README.md
+	modified:   parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/__pycache__/parkour_student_cfg.cpython-310.pyc
+	modified:   parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/__pycache__/parkour_teacher_cfg.cpython-310.pyc
+	modified:   parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/parkour_student_cfg.py
+	modified:   parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/parkour_teacher_cfg.py
+	modified:   setup.py
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	logs/
+	outputs/
+	scripts/rsl_rl/eval.py
+ 
+
+
+--- git diff ---
+diff --git a/README.md b/README.md
+index 00287f7..e18d8b2 100644
+--- a/README.md
++++ b/README.md
+@@ -1,3 +1,12 @@
++# Isaaclab_Parkour
++
++Isaaclab based Parkour locomotion 
++
++Base model: [Extreme-Parkour](https://extreme-parkour.github.io/)
++
++https://github.com/user-attachments/assets/aa9f7ece-83c1-404f-be50-6ae6a3ba3530
++
++
+ ## How to install 
+ 
+ ```
+@@ -5,11 +14,11 @@ cd IsaacLab ## going to IsaacLab
+ ```
+ 
+ ```
+-git clone https://github.com/cailab-hy/parkour_workspace.git ## cloning this repo
++https://github.com/CAI23sbP/Isaaclab_Parkour.git ## cloning this repo
+ ```
+ 
+ ```
+-cd parkour_workspace && pip3 install -e .
++cd Isaaclab_Parkour && pip3 install -e .
+ ```
+ 
+ ```
+@@ -30,18 +39,28 @@ python scripts/rsl_rl/train.py --task Isaac-Extreme-Parkour-Teacher-Unitree-Go2-
+ python scripts/rsl_rl/train.py --task Isaac-Extreme-Parkour-Student-Unitree-Go2-v0 --seed 1 --headless
+ ```
+ 
++### 1.3. Training Student Policy by Multi-GPU
++
++```
++python -m torch.distributed.run --nnodes=1 --nproc_per_node=3 scripts/rsl_rl/train.py --task=Isaac-Extreme-Parkour-Student-Unitree-Go2-v0 --headless --distributed
++```
++
+ ## How to play your policy 
+ 
+ ### 2.1. Pretrained Teacher Policy 
+ 
+ Download Teacher Policy by this [link](https://drive.google.com/file/d/1JtGzwkBixDHUWD_npz2Codc82tsaec_w/view?usp=sharing)
+ 
++
+ ### 2.2. Playing Teacher Policy 
+ 
+ ```
+ python scripts/rsl_rl/play.py --task Isaac-Extreme-Parkour-Teacher-Unitree-Go2-Play-v0 --num_envs 16
+ ```
+ 
++[Screencast from 2025년 08월 16일 12시 43분 38초.webm](https://github.com/user-attachments/assets/ff1f58db-2439-449c-b596-5a047c526f1f)
++
++
+ ### 3.1 Pretrained Student Policy 
+ 
+ Download Student Policy by this [link]()
+@@ -52,8 +71,12 @@ Download Student Policy by this [link]()
+ python scripts/rsl_rl/play.py --task Isaac-Extreme-Parkour-Student-Unitree-Go2-Play-v0 --num_envs 16
+ ```
+ 
++https://github.com/user-attachments/assets/82a5cecb-ffbf-4a46-8504-79188a147c40
++
++
+ ## How to play deploy in IsaacLab
+ 
++[Screencast from 2025년 08월 20일 18시 55분 01초.webm](https://github.com/user-attachments/assets/4fb1ba4b-1780-49b0-a739-bff0b95d9b66)
+ 
+ ### 3.1. Playing Teacher Policy 
+ 
+@@ -61,6 +84,7 @@ python scripts/rsl_rl/play.py --task Isaac-Extreme-Parkour-Student-Unitree-Go2-P
+ python scripts/rsl_rl/demo.py --task Isaac-Extreme-Parkour-Teacher-Unitree-Go2-Play-v0 
+ ```
+ 
++
+ ### 3.2. Playing Student Policy 
+ 
+ ```
+@@ -91,6 +115,70 @@ press 0: Use free camera (can use mouse)
+ press 1: Not use free camera (default)
+ ```
+ 
+-### Supported Parkour tasks
+ 
+-[o] [Extreme-Parkour](https://github.com/chengxuxin/extreme-parkour) 
++## How to Deploy sim2sim or sim2real
++
++it is a future work, i will open this repo as soon as possible
++
++sim2sim: isaaclab to mujoco
++
++sim2real: isaaclab to real world
++
++see this [repo](https://github.com/CAI23sbP/go2_parkour_deploy)
++
++
++### TODO list
++
++* [x] Opening code for training Teacher model  
++
++* [x] Opening code for training Distillation 
++
++* [x] Opening code for deploying policy in IsaacLab by demo: code refer [site](https://isaac-sim.github.io/IsaacLab/main/source/overview/showroom.html)  
++
++* [ ] Opening code for deploying policy by sim2sim (mujoco)
++
++* [ ] Opening code for deploying policy in real world 
++
++## Citation
++
++If you use this code for your research, you **must** cite the following paper:
++
++```
++@article{cheng2023parkour,
++title={Extreme Parkour with Legged Robots},
++author={Cheng, Xuxin and Shi, Kexin and Agarwal, Ananye and Pathak, Deepak},
++journal={arXiv preprint arXiv:2309.14341},
++year={2023}
++}
++```
++
++```
++@article{mittal2023orbit,
++   author={Mittal, Mayank and Yu, Calvin and Yu, Qinxi and Liu, Jingzhou and Rudin, Nikita and Hoeller, David and Yuan, Jia Lin and Singh, Ritvik and Guo, Yunrong and Mazhar, Hammad and Mandlekar, Ajay and Babich, Buck and State, Gavriel and Hutter, Marco and Garg, Animesh},
++   journal={IEEE Robotics and Automation Letters},
++   title={Orbit: A Unified Simulation Framework for Interactive Robot Learning Environments},
++   year={2023},
++   volume={8},
++   number={6},
++   pages={3740-3747},
++   doi={10.1109/LRA.2023.3270034}
++}
++```
++
++```
++Copyright (c) 2025, Sangbaek Park
++
++Permission is hereby granted, free of charge, to any person obtaining a copy
++of this software …
++
++The use of this software in academic or scientific publications requires
++explicit citation of the following repository:
++
++https://github.com/CAI23sbP/Isaaclab_Parkour
++```
++
++## contact us 
++
++```
++sbp0783@hanyang.ac.kr
++```
+diff --git a/parkour_isaaclab/envs/__pycache__/parkour_manager_based_env.cpython-310.pyc b/parkour_isaaclab/envs/__pycache__/parkour_manager_based_env.cpython-310.pyc
+index 58a4921..a760a1a 100644
+Binary files a/parkour_isaaclab/envs/__pycache__/parkour_manager_based_env.cpython-310.pyc and b/parkour_isaaclab/envs/__pycache__/parkour_manager_based_env.cpython-310.pyc differ
+diff --git a/parkour_isaaclab/envs/__pycache__/parkour_manager_based_rl_env.cpython-310.pyc b/parkour_isaaclab/envs/__pycache__/parkour_manager_based_rl_env.cpython-310.pyc
+index 18c1f37..0ddba22 100644
+Binary files a/parkour_isaaclab/envs/__pycache__/parkour_manager_based_rl_env.cpython-310.pyc and b/parkour_isaaclab/envs/__pycache__/parkour_manager_based_rl_env.cpython-310.pyc differ
+diff --git a/parkour_isaaclab/envs/mdp/__pycache__/events.cpython-310.pyc b/parkour_isaaclab/envs/mdp/__pycache__/events.cpython-310.pyc
+index 11eea17..c287570 100644
+Binary files a/parkour_isaaclab/envs/mdp/__pycache__/events.cpython-310.pyc and b/parkour_isaaclab/envs/mdp/__pycache__/events.cpython-310.pyc differ
+diff --git a/parkour_isaaclab/envs/mdp/__pycache__/observations.cpython-310.pyc b/parkour_isaaclab/envs/mdp/__pycache__/observations.cpython-310.pyc
+index add777a..eeed0b1 100644
+Binary files a/parkour_isaaclab/envs/mdp/__pycache__/observations.cpython-310.pyc and b/parkour_isaaclab/envs/mdp/__pycache__/observations.cpython-310.pyc differ
+diff --git a/parkour_isaaclab/envs/mdp/observations.py b/parkour_isaaclab/envs/mdp/observations.py
+index 89017d8..0218e71 100644
+--- a/parkour_isaaclab/envs/mdp/observations.py
++++ b/parkour_isaaclab/envs/mdp/observations.py
+@@ -18,6 +18,7 @@ from isaaclab.assets import Articulation
+ from isaaclab.utils.math  import euler_xyz_from_quat, wrap_to_pi
+ from parkour_isaaclab.envs.mdp.parkours import ParkourEvent 
+ from collections.abc import Sequence
++import numpy as np 
+ import cv2
+ if TYPE_CHECKING:
+     from parkour_isaaclab.envs import ParkourManagerBasedRLEnv
+@@ -36,17 +37,14 @@ class ExtremeParkourObservations(ManagerTermBase):
+         self.asset_cfg = cfg.params["asset_cfg"]
+         self.history_length = cfg.params['history_length']
+         self._obs_history_buffer = torch.zeros(self.num_envs, self.history_length, 3 + 2 + 3 + 4 + 36 + 5, device=self.device)
+-        self.global_counter = 0 
+         self.delta_yaw = torch.zeros(self.num_envs, device=self.device)
+         self.delta_next_yaw = torch.zeros(self.num_envs, device=self.device)
+         self.measured_heights = torch.zeros(self.num_envs, 132, device=self.device)
+         self.env = env
+-        self.episode_length_buf = torch.zeros(self.num_envs, device=self.device, dtype=torch.long)
+         self.body_id = self.asset.find_bodies('base')[0]
+         
+     def reset(self, env_ids: Sequence[int] | None = None) -> None:
+         self._obs_history_buffer[env_ids, :, :] = 0. 
+-        self.episode_length_buf[env_ids] = 0
+ 
+     def __call__(
+         self,
+@@ -56,22 +54,16 @@ class ExtremeParkourObservations(ManagerTermBase):
+         parkour_name: str,
+         history_length: int,
+         ) -> torch.Tensor:
+-        self.global_counter += 1
+-        self.episode_length_buf +=1
+         
+         terrain_names = self.parkour_event.env_per_terrain_name
+         env_idx_tensor = torch.tensor((terrain_names != 'parkour_flat')).to(dtype = torch.bool, device=self.device)
+         invert_env_idx_tensor = torch.tensor((terrain_names == 'parkour_flat')).to(dtype = torch.bool, device=self.device)
+         roll, pitch, yaw = euler_xyz_from_quat(self.asset.data.root_quat_w)
+         imu_obs = torch.stack((wrap_to_pi(roll), wrap_to_pi(pitch)), dim=1).to(self.device)
+-        if self.global_counter % 5 == 0:
+-            q = self.asset.data.root_quat_w
+-            yaw = torch.atan2(2*(q[:,0]*q[:,3] + q[:,1]*q[:,2]),
+-                            1 - 2*(q[:,2]**2 + q[:,3]**2))
+-            self.delta_yaw = self.parkour_event.target_yaw - yaw
+-            self.delta_next_yaw = self.parkour_event.next_target_yaw - yaw
++        if env.common_step_counter % 5 == 0:
++            self.delta_yaw = self.parkour_event.target_yaw - wrap_to_pi(yaw)
++            self.delta_next_yaw = self.parkour_event.next_target_yaw - wrap_to_pi(yaw)
+             self.measured_heights = self._get_heights()
+-            
+         commands = env.command_manager.get_command('base_velocity')
+         obs_buf = torch.cat((
+                             self.asset.data.root_ang_vel_b * 0.25,   #[1,3] 0~2
+@@ -98,7 +90,7 @@ class ExtremeParkourObservations(ManagerTermBase):
+                                   ],dim=-1)
+         obs_buf[:, 6:8] = 0
+         self._obs_history_buffer = torch.where(
+-            (self.episode_length_buf <= 1)[:, None, None], 
++            (env.episode_length_buf <= 1)[:, None, None], 
+             torch.stack([obs_buf] * self.history_length, dim=1),
+             torch.cat([
+                 self._obs_history_buffer[:, 1:],
+@@ -146,7 +138,6 @@ class ExtremeParkourObservations(ManagerTermBase):
+     def _get_heights(self):
+         return torch.clip(self.ray_sensor.data.pos_w[:, 2].unsqueeze(1) - self.ray_sensor.data.ray_hits_w[..., 2] - 0.3, -1, 1).to(self.device)
+ 
+-
+ class image_features(ManagerTermBase):
+     
+     def __init__(self, cfg: ObservationTermCfg, env: ParkourManagerBasedRLEnv):
+@@ -155,6 +146,7 @@ class image_features(ManagerTermBase):
+         self.clipping_range = self.camera_sensor.cfg.max_distance
+         resized = cfg.params["resize"]
+         self.buffer_len = cfg.params['buffer_len']
++        self.debug_vis = cfg.params['debug_vis']
+         self.resize_transform = torchvision.transforms.Resize(
+                                     (resized[0], resized[1]), 
+                                     interpolation=torchvision.transforms.InterpolationMode.BICUBIC).to(env.device)
+@@ -162,12 +154,11 @@ class image_features(ManagerTermBase):
+                                         self.buffer_len, 
+                                         resized[0], 
+                                         resized[1]).to(self.device)
+-        self.global_counter = 0 
+ 
+     def reset(self, env_ids: Sequence[int] | None = None) -> None:
+         if env_ids is None:
+             env_ids = torch.arange(0, self.num_envs)
+-        depth_images = self.camera_sensor.data.output["distance_to_image_plane"].squeeze(-1)[env_ids]
++        depth_images = self.camera_sensor.data.output["distance_to_camera"].squeeze(-1)[env_ids]
+         for depth_image, env_id in zip(depth_images, env_ids):
+             processed_image = self._process_depth_image(depth_image)
+             self.depth_buffer[env_id] = torch.stack([processed_image]* 2, dim=0)
+@@ -177,15 +168,29 @@ class image_features(ManagerTermBase):
+         env: ParkourManagerBasedRLEnv,        
+         sensor_cfg: SceneEntityCfg,
+         resize: tuple(int,int), 
+-        buffer_len: int
++        buffer_len: int,
++        debug_vis:bool
+         ):
+-        self.global_counter += 1
+-        if self.global_counter % 5 == 0:
+-            depth_images = self.camera_sensor.data.output["distance_to_image_plane"].squeeze(-1)
++        if env.common_step_counter % 5 == 0:
++            depth_images = self.camera_sensor.data.output["distance_to_camera"].squeeze(-1)
+             for env_id, depth_image in enumerate(depth_images):
+                 processed_image = self._process_depth_image(depth_image)
+                 self.depth_buffer[env_id] = torch.cat([self.depth_buffer[env_id, 1:], 
+                                                     processed_image.to(self.device).unsqueeze(0)], dim=0)
++        if self.debug_vis:
++            depth_images_np = self.depth_buffer[:, -2].detach().cpu().numpy()
++            depth_images_norm = []
++            for img in depth_images_np:
++                depth_images_norm.append(img)
++            rows = []
++            ncols = 4
++            for i in range(0, len(depth_images_norm), ncols):
++                row = np.hstack(depth_images_norm[i:i+ncols])  
++                rows.append(row)
++
++            grid_img = np.vstack(rows)   
++            cv2.imshow("depth_images_grid", grid_img)
++            cv2.waitKey(1)
+         return self.depth_buffer[:, -2].to(env.device)
+ 
+     def _process_depth_image(self, depth_image):
+@@ -200,14 +205,13 @@ class image_features(ManagerTermBase):
+ 
+     def _normalize_depth_image(self, depth_image):
+         depth_image = depth_image  # make similiar to scandot 
+-        depth_image = (depth_image - 0.1) / (self.clipping_range - 0.1)  - 0.5
++        depth_image = (depth_image) / (self.clipping_range)  - 0.5
+         return depth_image
+     
+ class obervation_delta_yaw_ok(ManagerTermBase):
+ 
+     def __init__(self, cfg: ObservationTermCfg, env: ParkourManagerBasedRLEnv):
+         super().__init__(cfg, env)
+-        self.global_counter = 0 
+         self.delta_yaw = torch.zeros(self.num_envs, device=self.device)
+ 
+     def __call__(
+@@ -217,17 +221,9 @@ class obervation_delta_yaw_ok(ManagerTermBase):
+         threshold: float,
+         asset_cfg: SceneEntityCfg = SceneEntityCfg("robot"),
+     ):
+-        self.global_counter += 1
+-        if self.global_counter % 5 == 0:
++        if env.common_step_counter % 5 == 0:
+             parkour_event: ParkourEvent =  env.parkour_manager.get_term(parkour_name)
+             asset: Articulation = env.scene[asset_cfg.name]
+-            robot_root_pos_w = asset.data.root_pos_w[:, :2] - parkour_event.env_origins[:, :2]
+-            target_pos_rel = parkour_event.cur_goals[:, :2] - robot_root_pos_w
+-            norm = torch.norm(target_pos_rel, dim=-1, keepdim=True)
+-            target_vec_norm = target_pos_rel / (norm + 1e-5)
+-            q = asset.data.root_state_w[:, 3:7]
+-            target_yaw = torch.atan2(target_vec_norm[:, 1], target_vec_norm[:, 0])
+-            yaw = torch.atan2(2*(q[:,0]*q[:,3] + q[:,1]*q[:,2]),
+-                                    1 - 2*(q[:,2]**2 + q[:,3]**2))
+-            self.delta_yaw = target_yaw - yaw
++            _, _, yaw = euler_xyz_from_quat(asset.data.root_quat_w)
++            self.delta_yaw = parkour_event.target_yaw - wrap_to_pi(yaw)
+         return self.delta_yaw < threshold
+\ No newline at end of file
+diff --git a/parkour_isaaclab/envs/mdp/parkour_actions/__pycache__/joint_actions.cpython-310.pyc b/parkour_isaaclab/envs/mdp/parkour_actions/__pycache__/joint_actions.cpython-310.pyc
+index 5df0572..9548712 100644
+Binary files a/parkour_isaaclab/envs/mdp/parkour_actions/__pycache__/joint_actions.cpython-310.pyc and b/parkour_isaaclab/envs/mdp/parkour_actions/__pycache__/joint_actions.cpython-310.pyc differ
+diff --git a/parkour_isaaclab/envs/mdp/parkour_actions/joint_actions.py b/parkour_isaaclab/envs/mdp/parkour_actions/joint_actions.py
+index 24ea336..028af37 100644
+--- a/parkour_isaaclab/envs/mdp/parkour_actions/joint_actions.py
++++ b/parkour_isaaclab/envs/mdp/parkour_actions/joint_actions.py
+@@ -24,12 +24,11 @@ class DelayedJointPositionAction(JointPositionAction):
+         # use default joint positions as offset
+         if cfg.use_default_offset:
+             self._offset = self._asset.data.default_joint_pos[:, self._joint_ids].clone()
+-      
+         self._action_history_buf = torch.zeros(self.num_envs, cfg.history_length, self._num_joints, device=self.device, dtype=torch.float)
+-        self._global_counter = 0 
+         self._delay_update_global_steps = cfg.delay_update_global_steps
+         self._action_delay_steps = cfg.action_delay_steps
+         self._use_delay = cfg.use_delay
++        self.env = env 
+ 
+     def apply_actions(self):
+         # set position targets
+@@ -37,7 +36,7 @@ class DelayedJointPositionAction(JointPositionAction):
+ 
+     def process_actions(self, actions: torch.Tensor):
+         # store the raw actions
+-        if self._global_counter % self._delay_update_global_steps == 0:
++        if self.env.common_step_counter % self._delay_update_global_steps == 0:
+             if len(self._action_delay_steps) != 0:
+                 self.delay = torch.tensor(self._action_delay_steps.pop(0), device=self.device, dtype=torch.float)
+         self._action_history_buf = torch.cat([self._action_history_buf[:, 1:].clone(), actions[:, None, :].clone()], dim=1)
+@@ -46,7 +45,6 @@ class DelayedJointPositionAction(JointPositionAction):
+             self._raw_actions[:] = self._action_history_buf[:, indices.long()]
+         else:
+             self._raw_actions[:] = actions
+-        self._global_counter += 1 
+         # apply the affine transformations
+ 
+         if self.cfg.clip is not None:
+diff --git a/parkour_isaaclab/envs/mdp/parkour_commands/__pycache__/uniform_parkour_command.cpython-310.pyc b/parkour_isaaclab/envs/mdp/parkour_commands/__pycache__/uniform_parkour_command.cpython-310.pyc
+index 5619457..80816fb 100644
+Binary files a/parkour_isaaclab/envs/mdp/parkour_commands/__pycache__/uniform_parkour_command.cpython-310.pyc and b/parkour_isaaclab/envs/mdp/parkour_commands/__pycache__/uniform_parkour_command.cpython-310.pyc differ
+diff --git a/parkour_isaaclab/envs/mdp/parkour_commands/uniform_parkour_command.py b/parkour_isaaclab/envs/mdp/parkour_commands/uniform_parkour_command.py
+index 9c3bea8..d0b7b83 100644
+--- a/parkour_isaaclab/envs/mdp/parkour_commands/uniform_parkour_command.py
++++ b/parkour_isaaclab/envs/mdp/parkour_commands/uniform_parkour_command.py
+@@ -94,7 +94,7 @@ class UniformParkourCommand(CommandTerm):
+             return
+         # get marker location
+         # -- base state
+-        base_pos_w = self.robot.data.root_pos_w.clone()
++        base_pos_w = self.robot.data.root_pos_w
+         base_pos_w[:, 2] += 0.5
+         # -- resolve the scales and quaternions
+         vel_des_arrow_scale, vel_des_arrow_quat = self._resolve_xy_velocity_to_arrow(self.command[:, :2])
+diff --git a/parkour_isaaclab/envs/mdp/parkours/__pycache__/parkour_event.cpython-310.pyc b/parkour_isaaclab/envs/mdp/parkours/__pycache__/parkour_event.cpython-310.pyc
+index 0870b87..19dd589 100644
+Binary files a/parkour_isaaclab/envs/mdp/parkours/__pycache__/parkour_event.cpython-310.pyc and b/parkour_isaaclab/envs/mdp/parkours/__pycache__/parkour_event.cpython-310.pyc differ
+diff --git a/parkour_isaaclab/envs/mdp/parkours/parkour_event.py b/parkour_isaaclab/envs/mdp/parkours/parkour_event.py
+index 55cfebb..c6fce73 100644
+--- a/parkour_isaaclab/envs/mdp/parkours/parkour_event.py
++++ b/parkour_isaaclab/envs/mdp/parkours/parkour_event.py
+@@ -46,14 +46,14 @@ class ParkourEvent(ParkourTerm):
+         terrain_generator: ParkourTerrainGenerator = self.terrain.terrain_generator_class
+         parkour_terrain_cfg :ParkourTerrainGeneratorCfg = self.terrain.cfg.terrain_generator
+         self.num_goals = parkour_terrain_cfg.num_goals
+-        self.env_class = torch.zeros(self.num_envs, device=self.device)
++        self.env_class = torch.zeros(self.num_envs, device=self.device, requires_grad=False)
+         self.env_origins = self.terrain.env_origins
+         self.terrain_type = terrain_generator.terrain_type
+         self.terrain_class = torch.from_numpy(self.terrain_type).to(self.device).to(torch.float)
+         self.env_class[:] = self.terrain_class[self.terrain.terrain_levels, self.terrain.terrain_types]
+         
+         terrain_goals = terrain_generator.goals
+-        self.terrain_goals = torch.from_numpy(terrain_goals).to(self.device).to(torch.float)
++        self.terrain_goals = torch.from_numpy(terrain_goals).to(self.device).to(torch.float).requires_grad_(False)
+         self.env_goals = torch.zeros(self.num_envs,  self.terrain_goals.shape[2] + self.num_future_goal_obs, 3, device=self.device, requires_grad=False)
+         self.cur_goal_idx = torch.zeros(self.num_envs, device=self.device, requires_grad=False, dtype=torch.long)
+         temp = self.terrain_goals[self.terrain.terrain_levels, self.terrain.terrain_types]
+@@ -61,7 +61,7 @@ class ParkourEvent(ParkourTerm):
+         self.env_goals[:] = torch.cat((temp, last_col.repeat(1, self.num_future_goal_obs, 1)), dim=1)[:]
+         self.cur_goals = self._gather_cur_goals()
+         self.next_goals = self._gather_cur_goals(future=1)
+-        self.reach_goal_timer = torch.zeros(self.num_envs, dtype=torch.float).to(device = self.device)
++        self.reach_goal_timer = torch.zeros(self.num_envs, dtype=torch.float, requires_grad=False).to(device = self.device)
+         
+         if self.debug_vis:
+             self.total_heights = torch.from_numpy(terrain_generator.goal_heights).to(device = self.device)
+@@ -75,6 +75,16 @@ class ParkourEvent(ParkourTerm):
+         self.env_per_terrain_name = self.total_terrain_names[numpy_terrain_levels, numpy_terrain_types]
+         self._reset_offset = self.env.event_manager.get_term_cfg('reset_root_state').params['offset']
+ 
++        robot_root_pos_w = self.robot.data.root_pos_w[:, :2] - self.env_origins[:, :2]
++        self.target_pos_rel = self.cur_goals[:, :2] - robot_root_pos_w
++        self.next_target_pos_rel = self.next_goals[:, :2] - robot_root_pos_w
++        norm = torch.norm(self.target_pos_rel, dim=-1, keepdim=True)
++        target_vec_norm = self.target_pos_rel / (norm + 1e-5)
++        self.target_yaw = torch.atan2(target_vec_norm[:, 1], target_vec_norm[:, 0])
++        norm = torch.norm(self.next_target_pos_rel, dim=-1, keepdim=True)
++        target_vec_norm = self.next_target_pos_rel / (norm + 1e-5)
++        self.next_target_yaw = torch.atan2(target_vec_norm[:, 1], target_vec_norm[:, 0])
++
+     def __call__(self):
+         self.cur_goals = self._gather_cur_goals()
+         self.next_goals = self._gather_cur_goals(future=1)
+@@ -122,7 +132,6 @@ class ParkourEvent(ParkourTerm):
+     def _resample_command(self, env_ids: Sequence[int]):
+         ## we are use reset_root_state events for initalize robot position in a subterrain
+         ## original robot root init position is (0,0) in the subterrain axis, so we subtracted off from current robot position 
+-
+         start_pos = self.env_origins[env_ids,:2] - \
+                     torch.tensor((self.terrain.cfg.terrain_generator.size[1] + \
+                                   self._reset_offset, 0)).to(self.device)
+diff --git a/parkour_isaaclab/envs/parkour_manager_based_rl_env.py b/parkour_isaaclab/envs/parkour_manager_based_rl_env.py
+index 91c9488..fc75c3b 100644
+--- a/parkour_isaaclab/envs/parkour_manager_based_rl_env.py
++++ b/parkour_isaaclab/envs/parkour_manager_based_rl_env.py
+@@ -29,12 +29,12 @@ class ParkourManagerBasedRLEnv(ParkourManagerBasedEnv, gym.Env):
+ 
+     def __init__(self, cfg: ParkourManagerBasedRLEnvCfg, render_mode: str | None = None, **kwargs):
+         self.common_step_counter = 0
++
+         super().__init__(cfg=cfg)
+ 
+         self.render_mode = render_mode
+ 
+         # -- init buffers
+-        self.episode_length_buf = torch.zeros(self.num_envs, device=self.device, dtype=torch.long)
+         # -- set the framerate of the gym video recorder wrapper so that the playback speed of the produced video matches the simulation
+         self.metadata["render_fps"] = 1 / self.step_dt
+         print("[INFO]: Completed setting up the environment...")
+@@ -43,6 +43,8 @@ class ParkourManagerBasedRLEnv(ParkourManagerBasedEnv, gym.Env):
+         # note: this order is important since observation manager needs to know the command and action managers
+         # and the reward manager needs to know the termination manager
+         # -- command manager
++        self.episode_length_buf = torch.zeros(self.num_envs, device=self.device, dtype=torch.long)
++
+         self.command_manager: CommandManager = CommandManager(self.cfg.commands, self)
+         print("[INFO] Command Manager: ", self.command_manager)
+ 
+@@ -79,7 +81,6 @@ class ParkourManagerBasedRLEnv(ParkourManagerBasedEnv, gym.Env):
+             "reward_manager": ManagerLiveVisualizer(manager=self.reward_manager),
+         }
+ 
+-
+     @property
+     def max_episode_length_s(self) -> float:
+         """Maximum episode length in seconds."""
+@@ -98,7 +99,6 @@ class ParkourManagerBasedRLEnv(ParkourManagerBasedEnv, gym.Env):
+         # check if we need to do rendering within the physics loop
+         # note: checked here once to avoid multiple checks within the loop
+         is_rendering = self.sim.has_gui() or self.sim.has_rtx_sensors()
+-
+         # perform physics stepping
+         for _ in range(self.cfg.decimation):
+             self._sim_step_counter += 1
+diff --git a/parkour_tasks/parkour_tasks/__pycache__/default_cfg.cpython-310.pyc b/parkour_tasks/parkour_tasks/__pycache__/default_cfg.cpython-310.pyc
+index 5c14729..3960a34 100644
+Binary files a/parkour_tasks/parkour_tasks/__pycache__/default_cfg.cpython-310.pyc and b/parkour_tasks/parkour_tasks/__pycache__/default_cfg.cpython-310.pyc differ
+diff --git a/parkour_tasks/parkour_tasks/default_cfg.py b/parkour_tasks/parkour_tasks/default_cfg.py
+index fc1b568..52e39a8 100644
+--- a/parkour_tasks/parkour_tasks/default_cfg.py
++++ b/parkour_tasks/parkour_tasks/default_cfg.py
+@@ -87,22 +87,22 @@ class ParkourDefaultSceneCfg(InteractiveSceneCfg):
+ ## we are now using a raycaster based camera, not a pinhole camera. see tail issue https://github.com/isaac-sim/IsaacLab/issues/719
+ CAMERA_CFG = RayCasterCameraCfg( 
+     prim_path= '{ENV_REGEX_NS}/Robot/base',
+-    history_length = 2,
+-    data_types=["distance_to_image_plane"],
++    data_types=["distance_to_camera"],
+     offset=RayCasterCameraCfg.OffsetCfg(
+         pos=(0.33, 0.0, 0.08), 
+-        rot=quat_from_euler_xyz_tuple(*tuple(torch.deg2rad(torch.tensor([180,80,-90])))), 
++        rot=quat_from_euler_xyz_tuple(*tuple(torch.deg2rad(torch.tensor([180,70,-90])))), 
+         convention="ros"
+         ),
+     depth_clipping_behavior = 'max',
+     pattern_cfg = PinholeCameraPatternCfg(
+-        focal_length=24.0, 
++        focal_length=11.041, 
+         horizontal_aperture=20.955,
++        vertical_aperture = 12.240,
+         height=60,
+         width=106,
+     ),
+     mesh_prim_paths=["/World/ground"],
+-    max_distance = 3,
++    max_distance = 2.,
+ )
+ 
+ CAMERA_USD_CFG = AssetBaseCfg(
+@@ -110,10 +110,9 @@ CAMERA_USD_CFG = AssetBaseCfg(
+     spawn=sim_utils.UsdFileCfg(usd_path=os.path.join(agents.__path__[0],'d435.usd')),
+     init_state=AssetBaseCfg.InitialStateCfg(
+             pos=(0.33, 0.0, 0.08), 
+-            rot=quat_from_euler_xyz_tuple(*tuple(torch.deg2rad(torch.tensor([180,80,-90]))))
++            rot=quat_from_euler_xyz_tuple(*tuple(torch.deg2rad(torch.tensor([180,90,-90]))))
+     )
+ )
+-
+ VIEWER = ViewerCfg(
+     eye=(-0., 2.6, 1.6),
+     asset_name = "robot",
+diff --git a/parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/__pycache__/parkour_mdp_cfg.cpython-310.pyc b/parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/__pycache__/parkour_mdp_cfg.cpython-310.pyc
+index dca2219..9692cae 100644
+Binary files a/parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/__pycache__/parkour_mdp_cfg.cpython-310.pyc and b/parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/__pycache__/parkour_mdp_cfg.cpython-310.pyc differ
+diff --git a/parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/__pycache__/parkour_student_cfg.cpython-310.pyc b/parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/__pycache__/parkour_student_cfg.cpython-310.pyc
+index 5b7bc51..a4dd55b 100644
+Binary files a/parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/__pycache__/parkour_student_cfg.cpython-310.pyc and b/parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/__pycache__/parkour_student_cfg.cpython-310.pyc differ
+diff --git a/parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/__pycache__/parkour_teacher_cfg.cpython-310.pyc b/parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/__pycache__/parkour_teacher_cfg.cpython-310.pyc
+index 7edbd96..3ca5946 100644
+Binary files a/parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/__pycache__/parkour_teacher_cfg.cpython-310.pyc and b/parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/__pycache__/parkour_teacher_cfg.cpython-310.pyc differ
+diff --git a/parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/agents/__pycache__/parkour_rl_cfg.cpython-310.pyc b/parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/agents/__pycache__/parkour_rl_cfg.cpython-310.pyc
+index 590be96..a092fdc 100644
+Binary files a/parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/agents/__pycache__/parkour_rl_cfg.cpython-310.pyc and b/parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/agents/__pycache__/parkour_rl_cfg.cpython-310.pyc differ
+diff --git a/parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/agents/__pycache__/rsl_student_ppo_cfg.cpython-310.pyc b/parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/agents/__pycache__/rsl_student_ppo_cfg.cpython-310.pyc
+index 538d1bc..87d64e4 100644
+Binary files a/parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/agents/__pycache__/rsl_student_ppo_cfg.cpython-310.pyc and b/parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/agents/__pycache__/rsl_student_ppo_cfg.cpython-310.pyc differ
+diff --git a/parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/agents/parkour_rl_cfg.py b/parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/agents/parkour_rl_cfg.py
+index f6449f3..4f94462 100644
+--- a/parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/agents/parkour_rl_cfg.py
++++ b/parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/agents/parkour_rl_cfg.py
+@@ -36,10 +36,10 @@ class ParkourRslRlStateHistEncoderCfg(ParkourRslRlBaseCfg):
+ class ParkourRslRlDepthEncoderCfg(ParkourRslRlBaseCfg):
+     backbone_class_name: str = "DepthOnlyFCBackbone58x87" 
+     encoder_class_name: str = "RecurrentDepthBackbone" 
+-    depth_shape: tuple[int] = (87, 58)
+     hidden_dims: int = 512
+     learning_rate: float = 1.e-3
+     num_steps_per_env: int = 24 * 5
++    depth_shape: tuple[int] = (87, 58)
+ 
+ @configclass
+ class ParkourRslRlEstimatorCfg(ParkourRslRlBaseCfg):
+diff --git a/parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/agents/rsl_student_ppo_cfg.py b/parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/agents/rsl_student_ppo_cfg.py
+index 910fe4e..5ca7d72 100644
+--- a/parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/agents/rsl_student_ppo_cfg.py
++++ b/parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/agents/rsl_student_ppo_cfg.py
+@@ -12,7 +12,7 @@ from isaaclab.utils import configclass
+ @configclass
+ class UnitreeGo2ParkourStudentPPORunnerCfg(ParkourRslRlOnPolicyRunnerCfg):
+     num_steps_per_env = 24 
+-    max_iterations = 50000 * 4
++    max_iterations = 50000 
+     save_interval = 100
+     experiment_name = "unitree_go2_parkour"
+     empirical_normalization = False
+@@ -35,8 +35,8 @@ class UnitreeGo2ParkourStudentPPORunnerCfg(ParkourRslRlOnPolicyRunnerCfg):
+     )
+     depth_encoder = ParkourRslRlDepthEncoderCfg(
+         hidden_dims = 512,
+-        learning_rate= 5e-4,
+-        num_steps_per_env = 24*3
++        learning_rate= 1e-3,
++        num_steps_per_env = 24*5
+     )
+ 
+     algorithm = ParkourRslRlDistillationAlgorithmCfg(
+diff --git a/parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/parkour_mdp_cfg.py b/parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/parkour_mdp_cfg.py
+index febe5bb..17d4536 100644
+--- a/parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/parkour_mdp_cfg.py
++++ b/parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/parkour_mdp_cfg.py
+@@ -85,6 +85,7 @@ class StudentObservationsCfg:
+             "sensor_cfg":SceneEntityCfg("depth_camera"),
+             "resize": (58, 87),
+             "buffer_len": 2,
++            "debug_vis": False
+             },
+         )
+ 
+diff --git a/parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/parkour_student_cfg.py b/parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/parkour_student_cfg.py
+index accb85b..2b94d5b 100644
+--- a/parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/parkour_student_cfg.py
++++ b/parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/parkour_student_cfg.py
+@@ -3,7 +3,7 @@ from isaaclab.utils import configclass
+ # Pre-defined configs
+ ##
+ from parkour_isaaclab.terrains.extreme_parkour.extreme_parkour_terrains_cfg import ExtremeParkourRoughTerrainCfg
+-  # isort: skip
++# isort: skip
+ from parkour_isaaclab.envs import ParkourManagerBasedRLEnvCfg
+ from .parkour_mdp_cfg import * 
+ from parkour_tasks.default_cfg import  CAMERA_USD_CFG, CAMERA_CFG, VIEWER
+@@ -18,36 +18,26 @@ class ParkourStudentSceneCfg(ParkourTeacherSceneCfg):
+         self.terrain.terrain_generator.num_rows = 10
+         self.terrain.terrain_generator.num_cols = 20
+         self.terrain.terrain_generator.horizontal_scale = 0.1
+-        
+         for key, sub_terrain in self.terrain.terrain_generator.sub_terrains.items():
+             sub_terrain: ExtremeParkourRoughTerrainCfg
+             sub_terrain.use_simplified = True 
+-            if key == 'demo':
++            sub_terrain.horizontal_scale = 0.1
++            if key == 'parkour_demo':
+                 sub_terrain.proportion = 0.15
+-                sub_terrain.y_range = (-0.1, 0.1)
+-
+-            elif key =='parkour_step':
+-                sub_terrain.proportion = 0.2
+-                sub_terrain.y_range = (-0.1, 0.1)
+ 
+             elif key =='parkour_flat':
+                 sub_terrain.proportion = 0.05
+-                sub_terrain.y_range = (-0.1, 0.1)
+ 
+-            elif key =='parkour_gap':
++            else:
+                 sub_terrain.proportion = 0.2
+-                sub_terrain.y_range = (-0.1, 0.1)
++                if key is not 'parkour':
++                    sub_terrain.y_range = (-0.1, 0.1)
+ 
+-            elif key =='parkour_hurdle':
+-                sub_terrain.proportion = 0.2
+-                sub_terrain.y_range = (-0.1, 0.1)
+-            sub_terrain.horizontal_scale = 0.1
+ 
+ 
+ @configclass
+ class UnitreeGo2StudentParkourEnvCfg(ParkourManagerBasedRLEnvCfg):
+-    viewer = VIEWER 
+-    scene: ParkourStudentSceneCfg = ParkourStudentSceneCfg(num_envs=77, env_spacing=1.)
++    scene: ParkourStudentSceneCfg = ParkourStudentSceneCfg(num_envs=192, env_spacing=1.)
+     # Basic settings
+     observations: StudentObservationsCfg = StudentObservationsCfg()
+     actions: ActionsCfg = ActionsCfg()
+@@ -78,32 +68,32 @@ class UnitreeGo2StudentParkourEnvCfg(ParkourManagerBasedRLEnvCfg):
+ 
+ @configclass
+ class UnitreeGo2StudentParkourEnvCfg_PLAY(UnitreeGo2StudentParkourEnvCfg):
++    viewer = VIEWER 
++
+     def __post_init__(self):
+         # post init of parent
+         super().__post_init__()
+         self.scene.depth_camera_usd = CAMERA_USD_CFG
+         # self.parkours.base_parkour.debug_vis = True
+-        # self.commands.base_velocity.debug_vis = True
+-        self.scene.num_envs = 1
+-        # self.scene.terrain.max_init_terrain_level = None
++        self.commands.base_velocity.debug_vis = True
++        self.scene.num_envs = 16
+         if self.scene.terrain.terrain_generator is not None:
+-            self.scene.terrain.terrain_generator.num_rows = 2
+-            self.scene.terrain.terrain_generator.num_cols = 2
+-            self.scene.terrain.terrain_generator.random_difficulty = True
++            self.scene.terrain.terrain_generator.num_rows = 5
++            self.scene.terrain.terrain_generator.num_cols = 5
++            # self.scene.terrain.terrain_generator.random_difficulty = True
+             self.scene.terrain.terrain_generator.difficulty_range = (0.7,1.0)
+             self.scene.terrain.terrain_generator.curriculum = False
+         self.observations.policy.enable_corruption = False
+         self.events.randomize_rigid_body_com = None
+         self.events.randomize_rigid_body_mass = None
+-        self.events.physics_material = None
+         self.events.push_by_setting_velocity = None
+-        self.events.random_camera_position.params['rot_noise_range'] = {'pitch':(0, 0)}
++        self.events.random_camera_position.params['rot_noise_range'] = {'pitch':(0, 1)}
+         self.commands.base_velocity.resampling_time_range = (60.,60.)
+         self.episode_length_s = 60.
+-
++        self.observations.depth_camera.depth_cam.params['debug_vis'] = True
+         for key, sub_terrain in self.scene.terrain.terrain_generator.sub_terrains.items():
+             if key =='parkour_flat':
+                 sub_terrain.proportion = 0.0
+             else:
+-                sub_terrain.proportion = 0.2
++                sub_terrain.proportion = 0.25
+                 sub_terrain.noise_range = (0.02, 0.02)
+diff --git a/parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/parkour_teacher_cfg.py b/parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/parkour_teacher_cfg.py
+index 65d17a4..521273f 100644
+--- a/parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/parkour_teacher_cfg.py
++++ b/parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/parkour_teacher_cfg.py
+@@ -31,7 +31,6 @@ class ParkourTeacherSceneCfg(ParkourDefaultSceneCfg):
+         
+ @configclass
+ class UnitreeGo2TeacherParkourEnvCfg(ParkourManagerBasedRLEnvCfg):
+-    viewer = VIEWER 
+     scene: ParkourTeacherSceneCfg = ParkourTeacherSceneCfg(num_envs=6144, env_spacing=1.)
+     # Basic settings
+     observations: TeacherObservationsCfg = TeacherObservationsCfg()
+@@ -63,6 +62,8 @@ class UnitreeGo2TeacherParkourEnvCfg(ParkourManagerBasedRLEnvCfg):
+ 
+ @configclass
+ class UnitreeGo2TeacherParkourEnvCfg_PLAY(UnitreeGo2TeacherParkourEnvCfg):
++    viewer = VIEWER 
++
+     def __post_init__(self):
+         # post init of parent
+         super().__post_init__()
+@@ -73,7 +74,6 @@ class UnitreeGo2TeacherParkourEnvCfg_PLAY(UnitreeGo2TeacherParkourEnvCfg):
+ 
+         self.scene.num_envs = 16
+         # spawn the robot randomly in the grid (instead of their terrain levels)
+-        # self.scene.terrain.max_init_terrain_level = None
+         if self.scene.terrain.terrain_generator is not None:
+             self.scene.terrain.terrain_generator.num_rows = 5
+             self.scene.terrain.terrain_generator.num_cols = 5
+diff --git a/scripts/rsl_rl/__pycache__/vecenv_wrapper.cpython-310.pyc b/scripts/rsl_rl/__pycache__/vecenv_wrapper.cpython-310.pyc
+index 7ec4a3e..23eb993 100644
+Binary files a/scripts/rsl_rl/__pycache__/vecenv_wrapper.cpython-310.pyc and b/scripts/rsl_rl/__pycache__/vecenv_wrapper.cpython-310.pyc differ
+diff --git a/scripts/rsl_rl/demo.py b/scripts/rsl_rl/demo.py
+index d2a9ac0..f60d37c 100644
+--- a/scripts/rsl_rl/demo.py
++++ b/scripts/rsl_rl/demo.py
+@@ -233,12 +233,16 @@ def main():
+                 action = demo_go2.policy(obs)
+             else:
+                 depth_camera = extras["observations"]['depth_camera'].to(demo_go2.device)
+-                obs_student = obs[:, :num_prop].clone()
+-                obs_student[:, 6:8] = 0
+-                depth_latent_and_yaw = demo_go2.depth_encoder(depth_camera, obs_student)
+-                depth_latent = depth_latent_and_yaw[:, :-2]
+-                yaw = depth_latent_and_yaw[:, -2:]
++                if demo_go2.env.unwrapped.common_step_counter %5 == 0:
++                    obs_student = obs[:, :num_prop] 
++                    obs_student[:, 6:8] = 0
++                    depth_latent_and_yaw = demo_go2.depth_encoder(depth_camera, obs_student)
++                    depth_latent = depth_latent_and_yaw[:, :-2]
++                    yaw = depth_latent_and_yaw[:, -2:]
+                 obs[:, 6:8] = 1.5*yaw
++                priv_states_estimated = demo_go2.estimator.inference(obs[:, :num_prop])
++                obs[:, num_prop+num_scan:num_prop+num_scan+num_priv_explicit] = priv_states_estimated
++
+                 action = demo_go2.policy(obs, hist_encoding=True, scandots_latent=depth_latent)
+             obs, _, _, extras = demo_go2.env.step(action)
+             # overwrite command based on keyboard input
+diff --git a/scripts/rsl_rl/modules/__pycache__/on_policy_runner_with_extractor.cpython-310.pyc b/scripts/rsl_rl/modules/__pycache__/on_policy_runner_with_extractor.cpython-310.pyc
+index 4503366..304b4a6 100644
+Binary files a/scripts/rsl_rl/modules/__pycache__/on_policy_runner_with_extractor.cpython-310.pyc and b/scripts/rsl_rl/modules/__pycache__/on_policy_runner_with_extractor.cpython-310.pyc differ
+diff --git a/scripts/rsl_rl/modules/on_policy_runner_with_extractor.py b/scripts/rsl_rl/modules/on_policy_runner_with_extractor.py
+index b6f21d1..a70f2c8 100644
+--- a/scripts/rsl_rl/modules/on_policy_runner_with_extractor.py
++++ b/scripts/rsl_rl/modules/on_policy_runner_with_extractor.py
+@@ -355,18 +355,20 @@ class OnPolicyRunnerWithExtractor(OnPolicyRunner):
+             delta_yaw_ok_buffer = []
+             yaws_buffer = []
+             for _ in range(self.depth_encoder_cfg['num_steps_per_env']):
+-                obs_prop_depth = obs[:, :self.depth_encoder_cfg['num_prop']].clone()
+-                obs_prop_depth[:, 6:8] = 0
+-                depth_latent_and_yaw = self.alg.depth_encoder(additional_obs["depth_camera"].clone(), obs_prop_depth)  # clone is crucial to avoid in-place operation
+-                depth_latent = depth_latent_and_yaw[:, :-2]
+-                yaw = 1.5*depth_latent_and_yaw[:, -2:]
++                if self.env.unwrapped.common_step_counter %5 == 0:
++                    obs_prop_depth = obs[:, :self.depth_encoder_cfg['num_prop']].clone()
++                    obs_prop_depth[:, 6:8] = 0
++                    depth_latent_and_yaw = self.alg.depth_encoder(additional_obs["depth_camera"].clone(), obs_prop_depth)  # clone is crucial to avoid in-place operation
++                    depth_latent = depth_latent_and_yaw[:, :-2]
++                    yaw = 1.5*depth_latent_and_yaw[:, -2:]
++                    yaws_buffer.append(obs[:,6:8].detach() - yaw)
+                 with torch.no_grad():
+                     actions_teacher = self.alg.policy.act_inference(obs, hist_encoding=True, scandots_latent=None)
+                     delta_yaw_ok_buffer.append(torch.nonzero(additional_obs["delta_yaw_ok"]).size(0) / additional_obs["delta_yaw_ok"].numel())
+                 obs[additional_obs["delta_yaw_ok"], 6:8] = yaw.detach()[additional_obs["delta_yaw_ok"]]
+                 actions_student = self.alg.depth_actor(obs, hist_encoding=True, scandots_latent=depth_latent)
+                 actions_buffer.append(actions_teacher.detach() - actions_student)
+-                yaws_buffer.append(obs[:, 6:8].detach() - yaw )
++                
+                 if it < num_pretrain_iter:
+                     # Step the environment
+                     obs, _, dones, infos = self.env.step(actions_teacher.detach().to(self.env.device))
+@@ -381,7 +383,6 @@ class OnPolicyRunnerWithExtractor(OnPolicyRunner):
+                 additional_obs['depth_camera'] = infos["observations"]['depth_camera']
+                 # perform normalization
+                 obs = self.obs_normalizer(obs)
+-                self.alg.policy.reset(dones)
+                 if self.log_dir is not None:
+                     if "episode" in infos:
+                         ep_infos.append(infos["episode"])
+@@ -533,7 +534,6 @@ class OnPolicyRunnerWithExtractor(OnPolicyRunner):
+         if self.empirical_normalization:
+             saved_dict["obs_norm_state_dict"] = self.obs_normalizer.state_dict()
+             saved_dict["privileged_obs_norm_state_dict"] = self.privileged_obs_normalizer.state_dict()
+-        
+         if self.depth_encoder_cfg is not None :
+             saved_dict['depth_encoder_state_dict'] = self.alg.depth_encoder.state_dict()
+             saved_dict['depth_actor_state_dict'] = self.alg.depth_actor.state_dict()
+@@ -556,7 +556,6 @@ class OnPolicyRunnerWithExtractor(OnPolicyRunner):
+                 self.privileged_obs_normalizer.load_state_dict(loaded_dict["privileged_obs_norm_state_dict"])
+             else:
+                 self.privileged_obs_normalizer.load_state_dict(loaded_dict["obs_norm_state_dict"])
+-
+         if self.depth_encoder_cfg is not None:
+             if 'depth_encoder_state_dict' not in loaded_dict:
+                 warnings.warn("'depth_encoder_state_dict' key does not exist, not loading depth encoder...")
+diff --git a/scripts/rsl_rl/play.py b/scripts/rsl_rl/play.py
+index 7fc6cd1..ca80fb6 100644
+--- a/scripts/rsl_rl/play.py
++++ b/scripts/rsl_rl/play.py
+@@ -176,12 +176,15 @@ def main():
+         else:
+             depth_camera = extras["observations"]['depth_camera'].to(env.device)
+             with torch.inference_mode():
+-                obs_student = obs[:, :num_prop].clone()
+-                obs_student[:, 6:8] = 0
+-                depth_latent_and_yaw = depth_encoder(depth_camera, obs_student)
+-                depth_latent = depth_latent_and_yaw[:, :-2]
+-                yaw = depth_latent_and_yaw[:, -2:]
++                if env.unwrapped.common_step_counter %5 == 0:
++                    obs_student = obs[:, :num_prop].clone()
++                    obs_student[:, 6:8] = 0
++                    depth_latent_and_yaw = depth_encoder(depth_camera, obs_student)
++                    depth_latent = depth_latent_and_yaw[:, :-2]
++                    yaw = depth_latent_and_yaw[:, -2:]
+                 obs[:, 6:8] = 1.5*yaw
++                priv_states_estimated = estimator.inference(obs[:, :num_prop])
++                obs[:, num_prop+num_scan:num_prop+num_scan+num_priv_explicit] = priv_states_estimated
+                 actions = policy(obs, hist_encoding=True, scandots_latent=depth_latent)
+         obs, _, _, extras = env.step(actions)
+         if args_cli.video:
+diff --git a/setup.py b/setup.py
+index a8832b1..086b3c2 100644
+--- a/setup.py
++++ b/setup.py
+@@ -1,6 +1,6 @@
+ from setuptools import setup, find_packages
+ setup(
+-    name="parkour_isaaclab",
++    name="Isaaclab_Parkour",
+     version="0.1",    
+     packages=find_packages(),  
+ )
+\ No newline at end of file
