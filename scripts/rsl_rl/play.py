@@ -34,6 +34,12 @@ cli_args.add_rsl_rl_args(parser)
 # append AppLauncher cli args
 AppLauncher.add_app_launcher_args(parser)
 args_cli = parser.parse_args()
+print(args_cli)
+"""
+Namespace(video=False, video_length=500, disable_fabric=False, num_envs=16, task='Isaac-Extreme-Parkour-Student-Unitree-Go2-Play-v0', use_pretrained_checkpoint=False, real_time=False, experiment_name=None, run_name=None, resume=False, load_run=None, checkpoint=None, logger=None, log_project_name=None, headless=False, livestream=-1, enable_cameras=False, xr=False, device='cuda:0', cpu=False, verbose=False, info=False, experience='', rendering_mode=None, kit_args='', anim_recording_enabled=False, anim_recording_start_time=0, anim_recording_stop_time=10)
+"""
+# exit()
+
 # always enable cameras to record video
 if args_cli.video:
     args_cli.enable_cameras = True

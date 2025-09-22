@@ -115,9 +115,11 @@ class UnitreeGo2StudentParkourEnvCfg_PLAY(UnitreeGo2StudentParkourEnvCfg_EVAL):
         self.episode_length_s = 60.
 
         if self.scene.terrain.terrain_generator is not None:
+            print("terrain generator not None")
             self.scene.terrain.terrain_generator.difficulty_range = (0.7,1.0)
         self.events.push_by_setting_velocity = None
         for key, sub_terrain in self.scene.terrain.terrain_generator.sub_terrains.items():
+            print("key:", key)
             if key =='parkour_flat':
                 sub_terrain.proportion = 0.0
             else:
