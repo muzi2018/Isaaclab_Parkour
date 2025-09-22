@@ -84,7 +84,7 @@ def main():
     )
     agent_cfg: ParkourRslRlOnPolicyRunnerCfg = cli_args.parse_rsl_rl_cfg(args_cli.task, args_cli)
     import pprint
-    pprint.pprint(env_cfg)
+    # pprint.pprint(env_cfg)
 
     # specify directory for logging experiments
     log_root_path = os.path.join("logs", "rsl_rl", agent_cfg.experiment_name)
