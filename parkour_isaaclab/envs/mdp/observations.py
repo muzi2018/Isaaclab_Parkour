@@ -189,8 +189,8 @@ class image_features(ManagerTermBase):
                 rows.append(row)
 
             grid_img = np.vstack(rows)   
-            cv2.imshow("depth_images_grid", grid_img)
-            cv2.waitKey(1)
+            # cv2.imshow("depth_images_grid", grid_img)
+            # cv2.waitKey(1)
         return self.depth_buffer[:, -2].to(env.device)
 
     def _process_depth_image(self, depth_image):

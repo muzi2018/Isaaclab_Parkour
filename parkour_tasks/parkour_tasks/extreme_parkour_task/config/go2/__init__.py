@@ -20,6 +20,7 @@ gym.register(
     entry_point="parkour_isaaclab.envs:ParkourManagerBasedRLEnv",
     disable_env_checker=True,
     kwargs={
+        # parameters
         "env_cfg_entry_point": f"{__name__}.parkour_teacher_cfg:UnitreeGo2TeacherParkourEnvCfg",
         # Teacher Environment
         ## scene, height_scanner, contact_forces, robot, sky_light, terrain, ParkourDCMotorCfg, 

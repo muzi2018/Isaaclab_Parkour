@@ -102,7 +102,7 @@ torch.backends.cudnn.deterministic = False
 torch.backends.cudnn.benchmark = False
 
 
-@hydra_task_config(args_cli.task, "rsl_rl_cfg_entry_point")
+@hydra_task_config(args_cli.task, "rsl_rl_cfg_entry_point") # 
 def main(env_cfg: ParkourManagerBasedRLEnv |ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agent_cfg: ParkourRslRlOnPolicyRunnerCfg):
     """Train with RSL-RL agent."""
     
@@ -143,7 +143,7 @@ def main(env_cfg: ParkourManagerBasedRLEnv |ManagerBasedRLEnvCfg | DirectRLEnvCf
     log_dir = os.path.join(log_root_path, log_dir)
 
     # create isaac environment
-    env = gym.make(args_cli.task, cfg=env_cfg, render_mode="rgb_array" if args_cli.video else None)
+    env = gym.make(args_cli.task, cfg=env_cfg, render_mode="rgb_array" if args_cli.video else None) # 
 
     # # convert to single-agent instance if required by the RL algorithm
     if isinstance(env.unwrapped, DirectMARLEnv):
@@ -154,10 +154,6 @@ def main(env_cfg: ParkourManagerBasedRLEnv |ManagerBasedRLEnvCfg | DirectRLEnvCf
         if not os.path.exists(log_root_path):
             print(f"{log_root_path} does not exist, creating...")
             os.makedirs(log_root_path, exist_ok=True)
-
-        # print("log_root_path = ", log_root_path)
-        # print("load_run = ", agent_cfg.load_run)
-        # print("load_checkpoint = ", agent_cfg.load_checkpoint)
         
         resume_path = get_checkpoint_path(log_root_path, agent_cfg.load_run, agent_cfg.load_checkpoint)
 
