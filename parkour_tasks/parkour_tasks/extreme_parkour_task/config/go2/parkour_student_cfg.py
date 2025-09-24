@@ -120,9 +120,9 @@ class UnitreeGo2StudentParkourEnvCfg_PLAY(UnitreeGo2StudentParkourEnvCfg_EVAL):
         self.events.push_by_setting_velocity = None
         for key, sub_terrain in self.scene.terrain.terrain_generator.sub_terrains.items():
             print("key:", key)
-            if key =='parkour_flat':
-                sub_terrain.proportion = 0.0
+            if key =='parkour_step':
+                sub_terrain.proportion = 0.99
             else:
-                sub_terrain.proportion = 0.25
+                sub_terrain.proportion = 0.0
                 sub_terrain.noise_range = (0.02, 0.02)
 
