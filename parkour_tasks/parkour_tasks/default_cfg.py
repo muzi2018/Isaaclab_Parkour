@@ -12,7 +12,6 @@ from isaaclab.sensors.ray_caster.patterns import PinholeCameraPatternCfg
 from isaaclab.envs import ViewerCfg
 import os, torch 
 from parkour_isaaclab.actuators.parkour_actuator_cfg import ParkourDCMotorCfg
-
 def quat_from_euler_xyz_tuple(roll: torch.Tensor, pitch: torch.Tensor, yaw: torch.Tensor) -> tuple:
     cy = torch.cos(yaw * 0.5)
     sy = torch.sin(yaw * 0.5)

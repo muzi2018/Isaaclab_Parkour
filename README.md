@@ -183,4 +183,10 @@ experiment_name = "unitree_go2_parkour" : Isaaclab_Parkour/parkour_tasks/parkour
 
 # Run
 
-clear && python scripts/rsl_rl/play.py --task Isaac-Extreme-Parkour-Student-Unitree-Go2-Play-v0 --num_envs 16 --checkpoint /home/wang/IsaacLab/Isaaclab_Parkour/logs/rsl_rl/unitree_go2_parkour_student_ppo/2025-09-18_14-46-54/model_84699.pt --enable_cameras
+clear && python scripts/rsl_rl/play.py --task Isaac-Extreme-Parkour-Student-Unitree-Go2-Play-v0 --num_envs 16 --checkpoint /home/wang/IsaacLab/Isaaclab_Parkour/logs/rsl_rl/unitree_go2_parkour_student_ppo/2025-09-23_16-32-59/model_47000.pt --enable_cameras
+
+pretrained
+
+clear && python scripts/rsl_rl/play.py --task Isaac-Extreme-Parkour-Student-Unitree-Go2-Play-v0 --num_envs 16 --checkpoint /home/wang/IsaacLab/Isaaclab_Parkour/logs/rsl_rl/unitree_go2_parkour_student_ppo/2025-09-03_12-07-56/model_99998.pt --enable_cameras
+
+# Train
