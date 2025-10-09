@@ -301,6 +301,7 @@ class OnPolicyRunnerWithExtractor(OnPolicyRunner):
             self.save(os.path.join(self.log_dir, f"model_{self.current_learning_iteration}.pt"))
 
     def learn_vision(self, num_learning_iterations, init_at_random_ep_len=False):
+        print("Training with vision!")
         if not isinstance(self.alg, DistillationWithExtractor):
             raise TypeError('A algorithm must be DistillationWithExtractor, not a ', self.alg)
         else:

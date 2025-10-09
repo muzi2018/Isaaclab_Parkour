@@ -35,7 +35,7 @@ python scripts/rsl_rl/train.py --task Isaac-Extreme-Parkour-Teacher-Unitree-Go2-
 ### 1.2. Training Student Policy
 
 ```
-python scripts/rsl_rl/train.py --task Isaac-Extreme-Parkour-Student-Unitree-Go2-v0 --seed 1 --headless
+span
 ```
 
 ## How to play your policy
