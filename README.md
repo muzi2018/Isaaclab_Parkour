@@ -187,6 +187,4 @@ clear && python scripts/rsl_rl/play.py --task Isaac-Extreme-Parkour-Student-Unit
 
 pretrained
 
-clear && python scripts/rsl_rl/play.py --task Isaac-Extreme-Parkour-Student-Unitree-Go2-Play-v0 --num_envs 16 --checkpoint /home/wang/IsaacLab/Isaaclab_Parkour/logs/rsl_rl/unitree_go2_parkour_student_ppo/2025-09-03_12-07-56/model_99998.pt --enable_cameras
-
-# Train
+Train
