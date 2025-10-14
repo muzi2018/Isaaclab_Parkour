@@ -8,6 +8,8 @@ https://github.com/user-attachments/assets/aa9f7ece-83c1-404f-be50-6ae6a3ba3530
 
 ## How to install
 
+isaaclab2.2.0
+
 ```
 cd IsaacLab ## going to IsaacLab
 ```
@@ -35,7 +37,7 @@ python scripts/rsl_rl/train.py --task Isaac-Extreme-Parkour-Teacher-Unitree-Go2-
 ### 1.2. Training Student Policy
 
 ```
-span
+python scripts/rsl_rl/train.py --task Isaac-Extreme-Parkour-Student-Unitree-Go2-v0 --seed 1 --headless
 ```
 
 ## How to play your policy
@@ -183,10 +185,7 @@ experiment_name = "unitree_go2_parkour" : Isaaclab_Parkour/parkour_tasks/parkour
 
 # Run
 
-clear && python scripts/rsl_rl/play.py --task Isaac-Extreme-Parkour-Student-Unitree-Go2-Play-v0 --num_envs 16 --checkpoint /home/wang/IsaacLab/Isaaclab_Parkour/logs/rsl_rl/unitree_go2_parkour_student_ppo/2025-09-23_16-32-59/model_47000.pt --enable_cameras
+clear && python scripts/rsl_rl/play.py --task Isaac-Extreme-Parkour-Student-Unitree-Go2-Play-v0 --num_envs 16 --checkpoint /home/wang/IsaacLab/Isaaclab_Parkour/logs/rsl_rl/unitree_go2_parkour_student_ppo/2025-09-18_14-46-54/model_84699.pt --enable_cameras
 
-pretrained
 
-Train
-
-python scripts/rsl_rl/play.py --task Isaac-Extreme-Parkour-Teacher-Unitree-Go2-Play-v0 --num_envs 1 --checkpoint /home/wang/IsaacLab/Isaaclab_Parkour/logs/rsl_rl/unitree_go2_parkour_student_ppo/teacher_policy/model_34700.pt
+clear && python scripts/rsl_rl/play.py --task Isaac-Extreme-Parkour-Teacher-Unitree-Go2-Play-v0 --num_envs 16 --checkpoint /home/wang/IsaacLab/Isaaclab_Parkour/logs/rsl_rl/unitree_go2_parkour_student_ppo/teacher_policy/model_34700.pt
