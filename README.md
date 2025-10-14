@@ -188,3 +188,5 @@ clear && python scripts/rsl_rl/play.py --task Isaac-Extreme-Parkour-Student-Unit
 pretrained
 
 Train
+
+python scripts/rsl_rl/play.py --task Isaac-Extreme-Parkour-Teacher-Unitree-Go2-Play-v0 --num_envs 1 --checkpoint /home/wang/IsaacLab/Isaaclab_Parkour/logs/rsl_rl/unitree_go2_parkour_student_ppo/teacher_policy/model_34700.pt
