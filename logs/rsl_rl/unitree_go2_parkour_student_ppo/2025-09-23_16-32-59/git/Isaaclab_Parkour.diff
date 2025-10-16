@@ -1,0 +1,42 @@
+--- git status ---
+On branch dev/note
+Your branch is up to date with 'origin/dev/note'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/__pycache__/parkour_student_cfg.cpython-310.pyc
+	modified:   parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/__pycache__/parkour_teacher_cfg.cpython-310.pyc
+	modified:   parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/agents/__pycache__/rsl_student_ppo_cfg.cpython-310.pyc
+	modified:   parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/parkour_student_cfg.py
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	logs/rsl_rl/unitree_go2_parkour_student_ppo/2025-09-23_16-32-59/
+	outputs/2025-09-23/16-32-59/
+
+no changes added to commit (use "git add" and/or "git commit -a") 
+
+
+--- git diff ---
+diff --git a/parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/__pycache__/parkour_student_cfg.cpython-310.pyc b/parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/__pycache__/parkour_student_cfg.cpython-310.pyc
+index fe95581..cfa6f85 100644
+Binary files a/parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/__pycache__/parkour_student_cfg.cpython-310.pyc and b/parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/__pycache__/parkour_student_cfg.cpython-310.pyc differ
+diff --git a/parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/__pycache__/parkour_teacher_cfg.cpython-310.pyc b/parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/__pycache__/parkour_teacher_cfg.cpython-310.pyc
+index 1bc834c..f87e7d4 100644
+Binary files a/parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/__pycache__/parkour_teacher_cfg.cpython-310.pyc and b/parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/__pycache__/parkour_teacher_cfg.cpython-310.pyc differ
+diff --git a/parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/agents/__pycache__/rsl_student_ppo_cfg.cpython-310.pyc b/parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/agents/__pycache__/rsl_student_ppo_cfg.cpython-310.pyc
+index a637bff..98313a1 100644
+Binary files a/parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/agents/__pycache__/rsl_student_ppo_cfg.cpython-310.pyc and b/parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/agents/__pycache__/rsl_student_ppo_cfg.cpython-310.pyc differ
+diff --git a/parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/parkour_student_cfg.py b/parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/parkour_student_cfg.py
+index bf5d88c..185b66c 100644
+--- a/parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/parkour_student_cfg.py
++++ b/parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/parkour_student_cfg.py
+@@ -108,6 +108,7 @@ class UnitreeGo2StudentParkourEnvCfg_EVAL(UnitreeGo2StudentParkourEnvCfg):
+ class UnitreeGo2StudentParkourEnvCfg_PLAY(UnitreeGo2StudentParkourEnvCfg_EVAL):
+ 
+     def __post_init__(self):
++        #parameters
+         # post init of parent
+         super().__post_init__()
+ 

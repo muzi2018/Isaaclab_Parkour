@@ -137,7 +137,9 @@ class ExtremeParkourObservations(ManagerTermBase):
     
     def _get_heights(self):
         return torch.clip(self.ray_sensor.data.pos_w[:, 2].unsqueeze(1) - self.ray_sensor.data.ray_hits_w[..., 2] - 0.3, -1, 1).to(self.device)
-
+        # self.ray_sensor.data.pos_w[:, 2] → height of the sensor in the world (z-coordinate).
+        # self.ray_sensor.data.ray_hits_w[..., 2] → z-coordinates of the points where the rays hit the terrain.
+        # 0.3 → a fixed offset, e.g., distance from robot base to the sensor.
 class image_features(ManagerTermBase):
     
     def __init__(self, cfg: ObservationTermCfg, env: ParkourManagerBasedRLEnv):

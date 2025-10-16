@@ -129,6 +129,22 @@ def main(env_cfg: ParkourManagerBasedRLEnv |ManagerBasedRLEnvCfg | DirectRLEnvCf
         env_cfg.seed = seed
         agent_cfg.seed = seed
 
+    # print("agent_cfg:", agent_cfg)
+    # print("agent_cfg end ...")
+
+# agent_cfg: UnitreeGo2ParkourTeacherPPORunnerCfg(
+    # seed=1, device='cuda:0', num_steps_per_env=24, max_iterations=50000, 
+    # empirical_normalization=False, obs_groups=<dataclasses._MISSING_TYPE object at 0x7f51c6976b60>, 
+    # clip_actions=None, save_interval=100, experiment_name='unitree_go2_parkour', run_name='', 
+    # logger='tensorboard', neptune_project='isaaclab', wandb_project='isaaclab', resume=False, 
+    # load_run='.*', load_checkpoint='model_.*.pt', class_name='OnPolicyRunner', 
+    # policy=ParkourRslRlPpoActorCriticCfg(class_name='ActorCriticRMA', init_noise_std=1.0, noise_std_type='scalar', actor_obs_normalization=<dataclasses._MISSING_TYPE object at 0x7f51c6976860>, critic_obs_normalization=<dataclasses._MISSING_TYPE object at 0x7f51c6976770>, actor_hidden_dims=[512, 256, 128], critic_hidden_dims=[512, 256, 128], activation='elu', tanh_encoder_output=False, scan_encoder_dims=[128, 64, 32], priv_encoder_dims=[64, 20], 
+    # actor=ParkourRslRlActorCfg(num_priv_explicit=9, num_priv_latent=29, num_prop=53, num_scan=132, num_hist=10, class_name='Actor', state_history_encoder=ParkourRslRlStateHistEncoderCfg(num_priv_explicit=9, num_priv_latent=29, num_prop=53, num_scan=132, num_hist=10, class_name='StateHistoryEncoder', channel_size=10))), 
+    # algorithm=ParkourRslRlPpoAlgorithmCfg(class_name='PPOWithExtractor', num_learning_epochs=5, num_mini_batches=4, learning_rate=0.0002, schedule='adaptive', gamma=0.99, lam=0.95, entropy_coef=0.01, desired_kl=0.01, max_grad_norm=1.0, value_loss_coef=1.0, use_clipped_value_loss=True, clip_param=0.2, normalize_advantage_per_mini_batch=False, rnd_cfg=None, symmetry_cfg=None, dagger_update_freq=20, priv_reg_coef_schedual=[0.0, 0.1, 2000.0, 3000.0]), 
+    # estimator=ParkourRslRlEstimatorCfg(num_priv_explicit=9, num_priv_latent=29, num_prop=53, num_scan=132, num_hist=10, class_name='DefaultEstimator', train_with_estimated_states=True, learning_rate=0.0001, hidden_dims=[128, 64]), depth_encoder=None)
+
+
+    
     # specify directory for logging experiments
     log_root_path = os.path.join("logs", "rsl_rl", agent_cfg.experiment_name)
     log_root_path = os.path.abspath(log_root_path)
@@ -144,13 +160,18 @@ def main(env_cfg: ParkourManagerBasedRLEnv |ManagerBasedRLEnvCfg | DirectRLEnvCf
 
     # create isaac environment
     env = gym.make(args_cli.task, cfg=env_cfg, render_mode="rgb_array" if args_cli.video else None) # 
+    print("args_cli.task: ", args_cli.task)
+    # print("env_cfg:", env_cfg)
+    # print("env_cfg end ...")
 
+    
     # # convert to single-agent instance if required by the RL algorithm
     if isinstance(env.unwrapped, DirectMARLEnv):
         env = multi_agent_to_single_agent(env)
     
     # save resume path before creating a new log_dir
     if agent_cfg.resume or agent_cfg.algorithm.class_name == "DistillationWithExtractor":
+        print(f"[INFO]: Resuming training from previous checkpoint.")
         if not os.path.exists(log_root_path):
             print(f"{log_root_path} does not exist, creating...")
             os.makedirs(log_root_path, exist_ok=True)
@@ -168,7 +189,7 @@ def main(env_cfg: ParkourManagerBasedRLEnv |ManagerBasedRLEnvCfg | DirectRLEnvCf
         print("[INFO] Recording videos during training.")
         print_dict(video_kwargs, nesting=4)
         env = gym.wrappers.RecordVideo(env, **video_kwargs)
-
+    print(f"Environment {args_cli.task} initialized.")
     # wrap around environment for rsl-rl
     env = ParkourRslRlVecEnvWrapper(env, clip_actions=agent_cfg.clip_actions)
     # # create runner from rsl-rl
