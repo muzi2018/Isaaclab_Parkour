@@ -1,0 +1,73 @@
+--- git status ---
+On branch master
+Your branch is up to date with 'origin/master'.
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	Isaaclab_Parkour.egg-info/
+	logs/rsl_rl/unitree_go2_parkour/2025-11-07_14-09-27/
+	outputs/2025-11-07/
+	parkour_isaaclab/actuators/__pycache__/__init__.cpython-311.pyc
+	parkour_isaaclab/actuators/__pycache__/parkour_actuator_cfg.cpython-311.pyc
+	parkour_isaaclab/actuators/__pycache__/parkour_actuator_pd.cpython-311.pyc
+	parkour_isaaclab/envs/__pycache__/__init__.cpython-311.pyc
+	parkour_isaaclab/envs/__pycache__/parkour_manager_based_env.cpython-311.pyc
+	parkour_isaaclab/envs/__pycache__/parkour_manager_based_env_cfg.cpython-311.pyc
+	parkour_isaaclab/envs/__pycache__/parkour_manager_based_rl_env.cpython-311.pyc
+	parkour_isaaclab/envs/__pycache__/parkour_manager_based_rl_env_cfg.cpython-311.pyc
+	parkour_isaaclab/envs/__pycache__/parkour_ui.cpython-311.pyc
+	parkour_isaaclab/envs/__pycache__/parkour_viewprot_camera_contoller.cpython-311.pyc
+	parkour_isaaclab/envs/mdp/__pycache__/__init__.cpython-311.pyc
+	parkour_isaaclab/envs/mdp/__pycache__/events.cpython-311.pyc
+	parkour_isaaclab/envs/mdp/__pycache__/observations.cpython-311.pyc
+	parkour_isaaclab/envs/mdp/__pycache__/rewards.cpython-311.pyc
+	parkour_isaaclab/envs/mdp/__pycache__/terminations.cpython-311.pyc
+	parkour_isaaclab/envs/mdp/parkour_actions/__pycache__/__init__.cpython-311.pyc
+	parkour_isaaclab/envs/mdp/parkour_actions/__pycache__/actions_cfg.cpython-311.pyc
+	parkour_isaaclab/envs/mdp/parkour_actions/__pycache__/joint_actions.cpython-311.pyc
+	parkour_isaaclab/envs/mdp/parkour_commands/__pycache__/__init__.cpython-311.pyc
+	parkour_isaaclab/envs/mdp/parkour_commands/__pycache__/parkour_command_cfg.cpython-311.pyc
+	parkour_isaaclab/envs/mdp/parkour_commands/__pycache__/uniform_parkour_command.cpython-311.pyc
+	parkour_isaaclab/envs/mdp/parkours/__pycache__/__init__.cpython-311.pyc
+	parkour_isaaclab/envs/mdp/parkours/__pycache__/parkour_event.cpython-311.pyc
+	parkour_isaaclab/envs/mdp/parkours/__pycache__/parkour_events_cfg.cpython-311.pyc
+	parkour_isaaclab/managers/__pycache__/__init__.cpython-311.pyc
+	parkour_isaaclab/managers/__pycache__/parkour_manager.cpython-311.pyc
+	parkour_isaaclab/managers/__pycache__/parkour_manager_term_cfg.cpython-311.pyc
+	parkour_isaaclab/managers/__pycache__/parkour_reward_manager.cpython-311.pyc
+	parkour_isaaclab/terrains/__pycache__/__init__.cpython-311.pyc
+	parkour_isaaclab/terrains/__pycache__/parkour_terrain_generator.cpython-311.pyc
+	parkour_isaaclab/terrains/__pycache__/parkour_terrain_generator_cfg.cpython-311.pyc
+	parkour_isaaclab/terrains/__pycache__/parkour_terrain_importer.cpython-311.pyc
+	parkour_isaaclab/terrains/__pycache__/utils.cpython-311.pyc
+	parkour_isaaclab/terrains/extreme_parkour/__pycache__/__init__.cpython-311.pyc
+	parkour_isaaclab/terrains/extreme_parkour/__pycache__/extreme_parkour_terrains_cfg.cpython-311.pyc
+	parkour_isaaclab/terrains/extreme_parkour/__pycache__/extreme_parkour_terrians.cpython-311.pyc
+	parkour_isaaclab/terrains/extreme_parkour/config/__pycache__/__init__.cpython-311.pyc
+	parkour_isaaclab/terrains/extreme_parkour/config/__pycache__/parkour.cpython-311.pyc
+	parkour_tasks/parkour_tasks/__pycache__/default_cfg.cpython-311.pyc
+	parkour_tasks/parkour_tasks/extreme_parkour_task/__pycache__/__init__.cpython-311.pyc
+	parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/__pycache__/__init__.cpython-311.pyc
+	parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/__pycache__/parkour_mdp_cfg.cpython-311.pyc
+	parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/__pycache__/parkour_teacher_cfg.cpython-311.pyc
+	parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/agents/__pycache__/__init__.cpython-311.pyc
+	parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/agents/__pycache__/parkour_rl_cfg.cpython-311.pyc
+	parkour_tasks/parkour_tasks/extreme_parkour_task/config/go2/agents/__pycache__/rsl_teacher_ppo_cfg.cpython-311.pyc
+	scripts/rsl_rl/__pycache__/__init__.cpython-311.pyc
+	scripts/rsl_rl/__pycache__/cli_args.cpython-311.pyc
+	scripts/rsl_rl/__pycache__/exporter.cpython-311.pyc
+	scripts/rsl_rl/__pycache__/vecenv_wrapper.cpython-311.pyc
+	scripts/rsl_rl/modules/__pycache__/__init__.cpython-311.pyc
+	scripts/rsl_rl/modules/__pycache__/actor_critic_with_encoder.cpython-311.pyc
+	scripts/rsl_rl/modules/__pycache__/distillation_with_extractor.cpython-311.pyc
+	scripts/rsl_rl/modules/__pycache__/on_policy_runner_with_extractor.cpython-311.pyc
+	scripts/rsl_rl/modules/__pycache__/ppo_with_extractor.cpython-311.pyc
+	scripts/rsl_rl/modules/feature_extractors/__pycache__/__init__.cpython-311.pyc
+	scripts/rsl_rl/modules/feature_extractors/__pycache__/depth_backbone.cpython-311.pyc
+	scripts/rsl_rl/modules/feature_extractors/__pycache__/estimator.cpython-311.pyc
+	scripts/rsl_rl/modules/feature_extractors/__pycache__/state_encoder.cpython-311.pyc
+
+nothing added to commit but untracked files present (use "git add" to track) 
+
+
+--- git diff ---
